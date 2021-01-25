@@ -44,9 +44,9 @@
 ;;; Seletores
 ;;; __________________________________________________________________________________________________
 
-(defun criar-no(allTab &optional (profundidade 0) (heuristica 0) (noPai nil))
-  "Criar estrutura de um no�"
-  (list allTab profundidade heuristica  noPai))
+(defun criar-no(allTab &optional (profundidade 0) (noPai nil))
+  "Criar estrutura de um no"
+  (list allTab profundidade noPai))
 
 
 (defun get-allTab(no)
@@ -128,7 +128,7 @@
 
 
 ;;; 
-;;; Funções Auxiliares
+;;; Funcoes Auxiliares
 ;;; __________________________________________________________________________________________________
 
 (defun juntar-listas(listaDest listaOrig)
@@ -200,7 +200,7 @@
 
 
 (defun conversor-coluna (letra)
-  ""
+  "Recebe uma letra equivalente a coluna e retorna um numero"
   (cond ((eq letra 'A) 1)
         ((eq letra 'B) 2)
         ((eq letra 'C) 3)

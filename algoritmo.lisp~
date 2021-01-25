@@ -1,0 +1,5 @@
+;;;; algoritmo.lisp
+;;;; Disciplina de IA - 2020 / 2021
+;;;; Projeto nº2 - Problema do Quatro
+;;;; Autor: João Azevedo  nº180221119
+;;;; Autor: Sara Carvalho  nº180221048
