@@ -1,6 +1,6 @@
-;;;; projeto.lisp
+;;;; interact.lisp
 ;;;; Disciplina de IA - 2020 / 2021
-;;;; Projeto nº1 - Problema do Quatro
+;;;; Projeto nº2 - Problema do Quatro
 ;;;; Autor: João Azevedo  nº180221119
 ;;;; Autor: Sara Carvalho  nº180221048
 
@@ -8,21 +8,20 @@
 ;;; Inicialização do programa
 ;; iniciar
 (defun iniciar ()
-"Permite iniciar o programa, fazendo a leitura do teclado do estado inicial e do algoritmo a utilizar para procurar a solução (neste caso a procura na profundidade ou na largura)"
-  (let*(
-		(modo_jogo (ler-modo-jogo))
-		(jogador_init (ler-jogador)) ; só se o modo for 1
+"Permite iniciar o programa"
+  (let*((modo_jogo (ler-modo-jogo))
+	(jogador_init (ler-jogador)) ; só se o modo for 1
         (profundidade (ler-profundidade))
-		(tempo_jogada (ler-tempo-jogada));;Caso seja o modo 1 | Falta acrescentar no negamax
-		(tempo_jogo (ler-tempo-jogo)); Caso seja modo 2
-		(no_init (criar-no (get-tabuleiro_init)))
-		(alfa -9999999999)
-		(beta 9999999999))
+	(tempo_jogada (ler-tempo-jogada));;Caso seja o modo 1 | Falta acrescentar no negamax
+	(tempo_jogo (ler-tempo-jogo)); Caso seja modo 2
+	(no_init (criar-no (get-tabuleiro_init)))
+	(alfa most-negative-fixnum)
+	(beta most-positive-fixnum))
 	(funcall negamax no profundidade alfa beta)))
 
 (defun get-tabuleiro_init()
-	"Retorna um tabuleiro novo"
-	'(
+"Retorna um tabuleiro novo"
+'(
     (
      (0 0 0 0)
      (0 0 0 0)
@@ -30,19 +29,19 @@
      (0 0 0 0)
      )
     (
-	 (branca quadrada alta oca)
-	 (preta quadrada baixa cheia)
-	 (preta quadrada alta oca)
-	 (branca redonda alta oca)
-	 (preta redonda alta oca)
-	 (branca redonda alta cheia)
-	 (preta redonda alta cheia)
-	 (preta redonda baixa cheia)
-	 (branca redonda baixa oca)
-	 (branca quadrada alta cheia)
-	 (preta redonda baixa oca)
-  	 (branca quadrada baixa cheia)
-	 (preta quadrada alta cheia)
+     (branca quadrada alta oca)
+     (preta quadrada baixa cheia)
+     (preta quadrada alta oca)
+     (branca redonda alta oca)
+     (preta redonda alta oca)
+     (branca redonda alta cheia)
+     (preta redonda alta cheia)
+     (preta redonda baixa cheia)
+     (branca redonda baixa oca)
+     (branca quadrada alta cheia)
+     (preta redonda baixa oca)
+     (branca quadrada baixa cheia)
+     (preta quadrada alta cheia)
      (preta quadrada baixa oca)
      (branca redonda baixa cheia)
      (branca quadrada baixa oca))))

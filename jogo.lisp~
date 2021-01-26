@@ -46,7 +46,7 @@
 
 (defun criar-no(allTab &optional (nivel 0) (noPai nil) (valor 0))
   "Criar estrutura de um no"
-  (list allTab nivel noPai) valor)
+  (list allTab nivel noPai valor))
 
 
 (defun get-allTab(no)
