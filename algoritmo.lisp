@@ -17,23 +17,35 @@
 ;; - 50 para cada linha com 3 pecas com a mesma caracteristica na linha (última linha vazia) para MIN
 ;; - 100 se existir 4 em linha com a mesma caracteristica para o MIN (MIN vence) -> POSSO USAR O VERIFICA-SOLUCAO-LISTA - SE FOR T, -100
 
-(defun avaliar-no (no)
-  "Recebe um no e efetua os cálculos de avaliacao"
-  (apply '+ (mapcar #' (lambda (linha)
-		(cond (())))))
+;(defun avaliar-no (no)
+;  "Recebe um no e efetua os cálculos de avaliacao"
+;  (apply '+ (mapcar #' (lambda (linha)
+;		(cond (()))))))
+
+(defun teste()
+  '(
+    (
+     ((branca quadrada alta oca) (preta quadrada baixa cheia) 0 (preta quadrada alta oca))
+     ((branca redonda alta oca) (preta redonda alta oca) (branca redonda alta cheia) 0)
+     (0 (preta redonda alta cheia) (preta redonda baixa cheia) 0)
+     ((branca redonda baixa oca) (branca quadrada alta cheia) (preta redonda baixa oca) (branca quadrada baixa cheia))
+     )
+    (
+     (preta quadrada alta cheia)
+     (preta quadrada baixa oca)
+     (branca redonda baixa cheia)
+     (branca quadrada baixa oca)
+     )
+    )
 )
+
 
 (defun contar (tabuleiro)
   "Conta o numero de caracteristicas iguais num tabuleiro"
-  (
-)
+  ())
 
-;no-folha -> funcao booleana que verifica se o no é no terminal, ou seja se não tiver mais sucessores ou se for solução
-(defun no-folha (no))
 
-;ordena-nos -> ordena os nos filhos pelo valor do avaliar-no
-;sucessores
-
+(defun orderna-filhos()); vai ordenar os nos pelo campo valor (ex heuristica)
 
 
 ;; Negamax com cortes alfabeta -> (negamax noRoot profundidade most-negative-fixnum most-positive-fixnum)
@@ -41,7 +53,7 @@
   ""
   (let ((nos-filhos (ordena-nos (gerar-sucessores no profundidade)))
         (value most-negative-fixnum))
-    (cond ((or (= profundidade 0) (equal (no-folha no) T)) (avaliar-no no))
+    (cond ((or (= profundidade 0) (equal (no-folha no profundidade) T)) (avaliar-no no))
           (t (loop for i from 0 to (- (list-length nos-filhos) 1) do
                 (setq value (max value -(negamax i (- profundidade 1) -beta -alfa)))
                 (setq alfa (max alfa value))
@@ -50,25 +62,37 @@
 
 
 
+;no-folha -> funcao booleana que verifica se o no é no terminal, ou seja se não tiver mais sucessores ou se for solução
+(defun no-folha (no profundidade)
+  "Retorna T se nó for um nó folha caso contrário retorna nil"
+  (cond 
+   ((null (reserva no)) (format t "aqui 3"))
+   ((null (gerar-sucessores no profundidade)) (format t "aqui"))
+   ((no-solucao no) (format t "aqui 2")); caso seja nó solução retorna T pois é folha.
+   (T nil)))
 
-;;***********************************************************************************************************************************
-;; TEM QUE SER ALTERADO, NÃO EXISTE LISTAS DE ABERTOS NEM DE FECHADOS
-(defun gerar-nos-filhos(x y no reserv profundidadePai listaAbertos listaFechados)
-  "Retorna numa lista todas as possibilidades já como nós criados a partir da posição dada como argumento (x,y) "
+
+
+(defun gerar-nos-posicao(x y no reserv)
+  "Retorna numa lista todos os nós filhos possíveis numa dada posição (x,y)"
    (cond
     ((null reserv) nil)
     ((not(casa-vaziap x y (tabuleiro no))) nil)
-    ((or (repetidop listaAbertos (criar-no (operador x y (car reserv) (get-allTab no)) (+ profundidadePai 1) no)) (repetidop listaFechados (criar-no (operador x y (car reserv) (get-allTab no)) (+ profundidadePai 1) 0 no))) (gerar-nos-filhos x y no (cdr reserv) profundidadePai listaAbertos listaFechados));Vê se o nó que vai ser criado já está na lista de abertos ou fechados.Caso esteja passa para a peça seguinte.
-    (t (cons (criar-no (operador x y (car reserv) (get-allTab no)) (+ profundidadePai 1) 0 no) (gerar-nos-filhos x y no (cdr reserv) profundidadePai listaAbertos listaFechados)))));Faz lista com todos os filhos possíveis do nó recebido numa dada posição, já na forma de nós.
+    (t (cons (criar-no (operador x y (car reserv) (get-allTab no)) (+ (get-nivel no) 1) no nil) (gerar-nos-filhos x y no (cdr reserv))))));Faz lista com todos os filhos possíveis do nó recebido numa dada posição, já na forma de nó.
 
-;;x -> coluna de inicio- default 1
-;;y -> linha de inicio - default 1
-;;no -> no para expandir
+
+
 (defun gerar-sucessores(no profundidade &optional (x 1) (y 1))
   "Retorna lista dos filhos do no. Caso a reserva esteja vazia retorna nil"
   (cond
    ((null (reserva no)) nil)
-   ((> x 4) (gerar-sucessores no profundidade listaAbertos listaFechados 1 (+ y 1) ));se coluna for maior que 4 passa para a linha a seguir.
-   ((> y 4) nil);se a linha for inválida é porque já não há posições por avaliar.Retorna nil.
-   ((not (casa-vaziap x y (tabuleiro no))) (gerar-sucessores no profundidade listaAbertos listaFechados (+ x 1) y));se posição não estiver vazia, vai para a próxima coluna.
-   (t (append (gerar-nos-filhos x y no (reserva no) profundidade listaAbertos listaFechados) (gerar-sucessores no profundidade listaAbertos listaFechados (+ x 1) y)))));faz lista de todos os filhos do nó recebido.
+   ((= profundidade 0) nil);Se profundidade é 0 então chegou à profundidade máxima pedida pelo user por isso não irá expandir nós e retorna nil.
+   ((> x 4) (gerar-sucessores no profundidade 1 (+ y 1)));se coluna for maior que 4 passa para a linha a seguir.
+   ((> y 4) nil);se a linha for inválida é porque já não há posições por avaliar. Retorna nil.
+   ((not (casa-vaziap x y (tabuleiro no))) (gerar-sucessores no profundidade (+ x 1) y));se posição não estiver vazia, vai para a próxima coluna.
+   (t (append (gerar-nos-posicao x y no (reserva no)) (gerar-sucessores no profundidade (+ x 1) y)))));faz lista de todos os filhos do nó recebido.
+
+
+
+
+

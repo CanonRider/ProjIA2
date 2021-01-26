@@ -44,9 +44,9 @@
 ;;; Seletores
 ;;; __________________________________________________________________________________________________
 
-(defun criar-no(allTab &optional (profundidade 0) (noPai nil))
+(defun criar-no(allTab &optional (nivel 0) (noPai nil) (valor 0))
   "Criar estrutura de um no"
-  (list allTab profundidade noPai))
+  (list allTab nivel noPai valor))
 
 
 (defun get-allTab(no)
@@ -54,14 +54,16 @@
   (car no)) ;estado
 
 (defun tabuleiro(no)
-  "Funcao que devolve o tabuleiro do no sem pecs reserva"
+  "Funcao que devolve o tabuleiro do no sem pecas reserva"
  (car (get-allTab no)))
 
 (defun reserva(no)
   "Funcao que devolve as pecas em reserva"
  (car(cdr (get-allTab no))))
+	
 
-(defun get-profundidade(no)
+
+(defun get-nivel(no)
   "Retorna profundidade de um no"
   (second no))
 
