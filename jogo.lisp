@@ -252,7 +252,7 @@
 (defun no-folha (no profundidade)
   "Retorna T se nó for um nó folha caso contrário retorna nil"
   (cond 
-   ((null (reserva no)) NIL)
+   ((null (reserva no)) T)
    ((no-solucao no) T); caso seja nó solução retorna T pois é folha.
    (T nil)))
 
@@ -309,7 +309,7 @@
 ; juntar-listas(listaDest listaOrig)
 (defun contar-caracteristica (tabuleiro caracteristica linha &optcional (coluna 1) (lista '()))
   ""
-  (cond ((casa-vaziap coluna linha tabuleiro) (contar-caracteristica tabuleiro linha (+ coluna 1) lista))
+  (cond ((casa-vaziap coluna linha tabuleiro) (contar-caracteristica tabuleiro caracteristica linha (+ coluna 1) lista))
         ((= coluna 4) lista)
         (t (cond (equal caracteristica 'branca)
 
