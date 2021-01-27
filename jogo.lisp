@@ -39,13 +39,30 @@
     )
 )
 
+(defun tabuleiro-testes()
+'(
+    (
+     (1 1 1 1)
+     (1 0 1 0)
+     (0 1 1 1)
+     (1 1 1 1)
+     )
+    (
+     (preta quadrada alta cheia)
+     (branca quadrada baixa oca)
+     )
+    )
+)
+
+
+
 
 ;;; _______________________________________________________________________________________________________________________________________________
 ;;;
 ;;;                                                                SELETORES
 ;;; _______________________________________________________________________________________________________________________________________________
 
-(defun criar-no(allTab &optional (profundidade 0) (noPai nil) (valor 0))
+(defun criar-no(allTab &optional (profundidade 0) (noPai nil) (valor nil))
   "Criar estrutura de um no"
   (list allTab profundidade noPai valor))
 
@@ -249,7 +266,7 @@
   (append listaDest listaOrig))
 
 ;no-folha -> funcao booleana que verifica se o no é no terminal, ou seja se não tiver mais sucessores ou se for solução
-(defun no-folha (no profundidade)
+(defun no-folha (no)
   "Retorna T se nó for um nó folha caso contrário retorna nil"
   (cond 
    ((null (reserva no)) T)
@@ -257,13 +274,23 @@
    (T nil)))
 
 
-(defun conversor-coluna (letra)
+;responsável por transformar uma letra em número
+(defun conversor-coluna-ln (letra)
   "Recebe uma letra equivalente a coluna e retorna um numero"
   (cond ((eq letra 'A) 1)
         ((eq letra 'B) 2)
         ((eq letra 'C) 3)
         ((eq letra 'D) 4)
-        (t (format t "Coluna invalida"))))
+        (t nil)))
+
+;responsável por transformar um número em letra
+(defun conversor-coluna-nl(numero)
+"Recebe um numero equivalente a coluna e retorna uma letra"
+  (cond ((= numero 1) 'A)
+        ((= numero 2) 'B)
+        ((= numero 3) 'C)
+        ((= numero 4) 'D)
+        (t nil)))
 
 
 
@@ -284,11 +311,13 @@
 ;; - 10 para cada 2 pacas com a mesma caracteristica na linha (2 celulas vazias) para MIN
 ;; - 50 para cada linha com 3 pecas com a mesma caracteristica na linha (ultima linha vazia) para MIN
 ;; - 100 se existir 4 em linha com a mesma caracteristica para o MIN (MIN vence) -> POSSO USAR O VERIFICA-SOLUCAO-LISTA - SE FOR T, -100
-(defun avaliar-no (no)
-  "Recebe um no e efetua os calculos de avaliacao"
-  (apply '+ (mapcar #' (lambda (linha)
-		(cond (())))))
-)
+
+
+;(defun avaliar-no (no)
+;  "Recebe um no e efetua os calculos de avaliacao"
+;  (apply '+ (mapcar #' (lambda (linha)
+;		(cond (())))))
+;)
 
 
 (defun tabuleiro-teste ()
@@ -296,25 +325,20 @@
      ((branca quadrada alta oca) (preta redonda baixa cheia) 0 0)
      (0 (preta redonda alta oca) 0 0)
      (0 0 0 0)
-     (0 0 0 0)
-    )
-)
+     (0 0 0 0)))
 
-(defun contar-linha (tabuleiro index)
-  "Conta o numero de caracteristicas iguais num tabuleiro"
-  (
-  
-)
+;(defun contar-linha (tabuleiro index)
+;  "Conta o numero de caracteristicas iguais num tabuleiro"
+;  ())
 
 ; juntar-listas(listaDest listaOrig)
-(defun contar-caracteristica (tabuleiro caracteristica linha &optcional (coluna 1) (lista '()))
-  ""
-  (cond ((casa-vaziap coluna linha tabuleiro) (contar-caracteristica tabuleiro caracteristica linha (+ coluna 1) lista))
-        ((= coluna 4) lista)
-        (t (cond (equal caracteristica 'branca)
-
+;(defun contar-caracteristica (tabuleiro caracteristica linha &optcional (coluna 1) (lista '()))
+;  ""
+;  (cond ((casa-vaziap coluna linha tabuleiro) (contar-caracteristica tabuleiro caracteristica linha (+ coluna 1) lista))
+;        ((= coluna 4) lista)
+;        (t (cond (equal caracteristica 'branca)
 ;(setq lista (
-)
+;))))
 
 ;comparar pecas
 (defun comparar-pecas (p1 p2)
@@ -323,8 +347,7 @@
         ((equal (second p1) (second p2)) (second p1))
         ((equal (third p1) (third p2)) (third p1))
         ((equal (fourth p1) (fourth p2)) (fourth p1))
-        (t nil))        
-)
+        (t nil)))
 
 
 
@@ -335,22 +358,26 @@
 
 (defun gerar-nos-posicao(x y no reserv)
   "Retorna numa lista todos os nós filhos possíveis numa dada posição (x,y)"
-   (cond
+  (cond
     ((null reserv) nil)
     ((not(casa-vaziap x y (tabuleiro no))) nil)
-    (t (cons (criar-no (operador x y (car reserv) (get-allTab no)) (+ (get-profundidade no) 1) no nil) (gerar-nos-filhos x y no (cdr reserv))))));Faz lista com todos os filhos possíveis do nó recebido numa dada posição, já na forma de nó.
+    (t (cons (criar-no (operador (conversor-coluna-nl x) y (car reserv) (get-allTab no)) (+ (get-profundidade no) 1) no nil) (gerar-nos-posicao x y no (cdr reserv))))));Faz lista com todos os filhos possíveis do nó recebido numa dada posição, já na forma de nó.
 
 
 
-(defun gerar-sucessores(no profundidade &optional (x 1) (y 1))
+(defun gerar-sucessores(no profundidade &optional (x 'A) (y 1))
   "Retorna lista dos filhos do no. Caso a reserva esteja vazia retorna nil"
-  (cond
-   ((null (reserva no)) nil)
-   ((= profundidade 0) nil);Se profundidade é 0 então chegou à profundidade máxima pedida pelo user por isso não irá expandir nós e retorna nil.
-   ((> x 4) (gerar-sucessores no profundidade 1 (+ y 1)));se coluna for maior que 4 passa para a linha a seguir.
-   ((> y 4) nil);se a linha for inválida é porque já não há posições por avaliar. Retorna nil.
-   ((not (casa-vaziap x y (tabuleiro no))) (gerar-sucessores no profundidade (+ x 1) y));se posição não estiver vazia, vai para a próxima coluna.
-   (t (append (gerar-nos-posicao x y no (reserva no)) (gerar-sucessores no profundidade (+ x 1) y)))));faz lista de todos os filhos do nó recebido.
+  (let
+      (col_num (conversor-coluna-ln x))
+
+    (cond
+     ((null (reserva no)) nil)
+     ((= profundidade 0) nil);Se profundidade é 0 então chegou à profundidade máxima pedida pelo user por isso não irá expandir nós e retorna nil.
+     ((> (col_num) 4) (gerar-sucessores no profundidade 'A (+ y 1)));se coluna for maior que 4 passa para a linha a seguir.
+     ((> y 4) nil);se a linha for inválida é porque já não há posições por avaliar. Retorna nil.
+     ((not (casa-vaziap col_num y (tabuleiro no))) (gerar-sucessores no profundidade (conversor-coluna-nl (+ (col_num) 1)) y));se posição não estiver vazia, vai para a próxima coluna.
+     (t (append (gerar-nos-posicao (col_num) y no (reserva no)) (gerar-sucessores no profundidade (conversor-coluna-nl (+ (col_num) 1)) y))))));faz lista de todos os filhos do nó recebido.
+
 
 
 

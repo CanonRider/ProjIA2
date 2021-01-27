@@ -11,7 +11,7 @@
   ""
   (let ((nos-filhos (ordena-nos (gerar-sucessores no profundidade)))
         (value most-negative-fixnum))
-    (cond ((or (= profundidade 0) (equal (no-folha no profundidade) T)) (avaliar-no no))
+    (cond ((or (= profundidade 0) (equal (no-folha no) T)) (avaliar-no no))
           (t (loop for i from 0 to (- (list-length nos-filhos) 1) do
                 (setq value (max value -(negamax i (- profundidade 1) -beta -alfa)))
                 (setq alfa (max alfa value))
