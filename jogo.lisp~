@@ -54,7 +54,32 @@
     )
 )
 
-
+(defun get-tabuleiro_init()
+"Retorna um tabuleiro novo"
+'(
+    (
+     (0 0 0 0)
+     (0 0 0 0)
+     (0 0 0 0)
+     (0 0 0 0)
+     )
+    (
+     (branca quadrada alta oca)
+     (preta quadrada baixa cheia)
+     (preta quadrada alta oca)
+     (branca redonda alta oca)
+     (preta redonda alta oca)
+     (branca redonda alta cheia)
+     (preta redonda alta cheia)
+     (preta redonda baixa cheia)
+     (branca redonda baixa oca)
+     (branca quadrada alta cheia)
+     (preta redonda baixa oca)
+     (branca quadrada baixa cheia)
+     (preta quadrada alta cheia)
+     (preta quadrada baixa oca)
+     (branca redonda baixa cheia)
+     (branca quadrada baixa oca))))
 
 
 ;;; _______________________________________________________________________________________________________________________________________________
@@ -299,55 +324,137 @@
 ;;;                                                             FUNCOES PARA AVALIAR
 ;;; _______________________________________________________________________________________________________________________________________________	
 
-;;; no(estado, profundidade, nopai, avaliacao)
 
-;; avaliar-no
+;; Atribuicao de pontos
 ;; + 1 para cada linha com 3 celulas vazias para MAX
 ;; + 10 para cada 2 pecas com a mesma caracteristica na linha (2 celulas vazias) para MAX
-;; + 50 para cada linha com 3 pecas com a mesma caracteristica na linha (ultima linha vazia) para MAX
-;; + 100 se existir 4 em linha com a mesma caracteristica para o MAX (MAX vence) -> POSSO USAR O VERIFICA-SOLUCAO-LISTA - SE FOR T, +100
+;; + 100 para cada linha com 3 pecas com a mesma caracteristica na linha (ultima linha vazia) para MAX
+;; + 2000 se existir 4 em linha com a mesma caracteristica para o MAX (MAX vence) -> POSSO USAR O VERIFICA-SOLUCAO-LISTA - SE FOR T, +2000
 ;;
 ;; - 1 para cada linha com 3 celulas vazias para MIN
 ;; - 10 para cada 2 pacas com a mesma caracteristica na linha (2 celulas vazias) para MIN
-;; - 50 para cada linha com 3 pecas com a mesma caracteristica na linha (ultima linha vazia) para MIN
-;; - 100 se existir 4 em linha com a mesma caracteristica para o MIN (MIN vence) -> POSSO USAR O VERIFICA-SOLUCAO-LISTA - SE FOR T, -100
+;; - 100 para cada linha com 3 pecas com a mesma caracteristica na linha (ultima linha vazia) para MIN
+;; - 2000 se existir 4 em linha com a mesma caracteristica para o MIN (MIN vence) -> POSSO USAR O VERIFICA-SOLUCAO-LISTA - SE FOR T, -2000
+
+; Teste: (caracteristicas-lista '((branca quadrada alta oca) (preta quadrada baixa cheia) 0 (preta quadrada alta oca)))
+; Resultado: (branca quadrada alta oca preta quadrada baixa cheia preta quadrada alta oca)
+(defun caracteristicas-lista (lista &optional (caracteristicas '()))
+  "Retorna uma lista com todas as caracteristicas de uma linha"
+  (cond ((null lista) caracteristicas)
+        ((numberp (car lista)) (caracteristicas-lista (cdr lista) caracteristicas))
+        (t (caracteristicas-lista (cdr lista) (append caracteristicas (car lista))))))
 
 
-;(defun avaliar-no (no)
-;  "Recebe um no e efetua os calculos de avaliacao"
-;  (apply '+ (mapcar #' (lambda (linha)
-;		(cond (())))))
-;)
+
+; Teste: (conta-caracteristicas-lista '(branca quadrada alta oca preta quadrada baixa cheia preta quadrada alta oca))
+; Resultado: 1 branca, 2 preta, 3 quadrada, 0 redonda, 2 alta, 1 baixa, 1 cheia, 2 oca
+(defun conta-caracteristicas-lista(lista &optional (counterBranca 0) (counterPreta 0) (counterQuadrada 0) (counterRedonda 0) (counterAlta 0) (counterBaixa 0) (counterCheia 0) (counterOca 0))
+  "Função que recebe uma lista com as caracteristicas e retorna uma lista com o numero de brancas, pretas, quadradas, redondas, altas, baixas, cheias e ocas"
+  (cond ((null lista) (list counterBranca counterPreta counterQuadrada counterRedonda counterAlta counterBaixa counterCheia counterOca))
+        ((equal (car lista) 'branca) (conta-caracteristicas-lista (cdr lista) (+ counterBranca 1) counterPreta counterQuadrada counterRedonda counterAlta counterBaixa counterCheia counterOca))
+        ((equal (car lista) 'preta) (conta-caracteristicas-lista (cdr lista) counterBranca (+ counterPreta 1) counterQuadrada counterRedonda counterAlta counterBaixa counterCheia counterOca))
+        ((equal (car lista) 'quadrada) (conta-caracteristicas-lista (cdr lista) counterBranca counterPreta (+ counterQuadrada 1) counterRedonda counterAlta counterBaixa counterCheia counterOca))
+        ((equal (car lista) 'redonda) (conta-caracteristicas-lista (cdr lista) counterBranca counterPreta counterQuadrada (+ counterRedonda 1) counterAlta counterBaixa counterCheia counterOca))
+        ((equal (car lista) 'alta) (conta-caracteristicas-lista (cdr lista) counterBranca counterPreta counterQuadrada counterRedonda (+ counterAlta 1) counterBaixa counterCheia counterOca))
+        ((equal (car lista) 'baixa) (conta-caracteristicas-lista (cdr lista) counterBranca counterPreta counterQuadrada counterRedonda counterAlta (+ counterBaixa 1) counterCheia counterOca))
+        ((equal (car lista) 'cheia) (conta-caracteristicas-lista (cdr lista) counterBranca counterPreta counterQuadrada counterRedonda counterAlta counterBaixa (+ counterCheia 1) counterOca))
+        ((equal (car lista) 'oca) (conta-caracteristicas-lista (cdr lista) counterBranca counterPreta counterQuadrada counterRedonda counterAlta counterBaixa counterCheia (+ counterOca 1)))
+        (t (conta-caracteristicas-lista (cdr lista) counterBranca counterPreta counterQuadrada counterRedonda counterAlta counterBaixa counterCheia counterOca)))
+)
 
 
-(defun tabuleiro-teste ()
-  '(
-     ((branca quadrada alta oca) (preta redonda baixa cheia) 0 0)
-     (0 (preta redonda alta oca) 0 0)
-     (0 0 0 0)
-     (0 0 0 0)))
+; Teste: (conta-linhas (tabuleiro (criar-no (tabuleiro-teste-A))))
+; resultado: ((1 2 3 0 2 1 1 2) (2 1 0 3 3 0 1 2) (0 2 0 2 1 1 2 0) (3 1 2 2 1 3 2 2))
+(defun conta-linhas (tabuleiro)
+  "Retorna uma lista com listas das contas das caracteristicas de cada linha"
+  (list (conta-caracteristicas-lista (caracteristicas-lista (linha 1 tabuleiro))) 
+        (conta-caracteristicas-lista (caracteristicas-lista (linha 2 tabuleiro))) 
+        (conta-caracteristicas-lista (caracteristicas-lista (linha 3 tabuleiro))) 
+        (conta-caracteristicas-lista (caracteristicas-lista (linha 4 tabuleiro)))))
 
-;(defun contar-linha (tabuleiro index)
-;  "Conta o numero de caracteristicas iguais num tabuleiro"
-;  ())
 
-; juntar-listas(listaDest listaOrig)
-;(defun contar-caracteristica (tabuleiro caracteristica linha &optcional (coluna 1) (lista '()))
-;  ""
-;  (cond ((casa-vaziap coluna linha tabuleiro) (contar-caracteristica tabuleiro caracteristica linha (+ coluna 1) lista))
-;        ((= coluna 4) lista)
-;        (t (cond (equal caracteristica 'branca)
-;(setq lista (
-;))))
+; Teste: (conta-colunas (tabuleiro (criar-no (tabuleiro-teste-A))))
+; resultado: ((3 0 1 2 2 1 0 3) (1 3 2 2 3 1 3 1) (1 2 0 3 1 2 2 1) (1 1 2 0 1 1 1 1))
+(defun conta-colunas (tabuleiro)
+  "Retorna uma lista com listas das contas das caracteristicas de cada coluna"
+  (list (conta-caracteristicas-lista (caracteristicas-lista (coluna 1 tabuleiro))) 
+        (conta-caracteristicas-lista (caracteristicas-lista (coluna 2 tabuleiro))) 
+        (conta-caracteristicas-lista (caracteristicas-lista (coluna 3 tabuleiro))) 
+        (conta-caracteristicas-lista (caracteristicas-lista (coluna 4 tabuleiro)))))
 
-;comparar pecas
-(defun comparar-pecas (p1 p2)
-  "Devolve a caracteristica igual"
-  (cond ((equal (first p1) (first p2)) (first p1))
-        ((equal (second p1) (second p2)) (second p1))
-        ((equal (third p1) (third p2)) (third p1))
-        ((equal (fourth p1) (fourth p2)) (fourth p1))
-        (t nil)))
+
+; Teste: (conta-diagonal-1 (tabuleiro (criar-no (tabuleiro-teste-A))))
+; resultado: (2 2 2 2 2 2 2 2)
+(defun conta-diagonal-1 (tabuleiro)
+  "Retorna uma lista das contas das caracteristicas da diagonal 1"
+  (conta-caracteristicas-lista (caracteristicas-lista (diagonal-1 tabuleiro)))) 
+        
+
+; Teste: (conta-diagonal-2 (tabuleiro (criar-no (tabuleiro-teste-A))))
+; resultado: (2 2 1 3 3 1 2 2)
+(defun conta-diagonal-2 (tabuleiro)
+  "Retorna uma lista das contas das caracteristicas da diagonal 2"
+  (conta-caracteristicas-lista (caracteristicas-lista (diagonal-2 tabuleiro))))
+        
+
+; Teste: (calcular-valor-linhas (criar-no (tabuleiro-teste-A)))
+; resultado: 310
+(defun calcular-valor-linhas (no &optional (index 1) (valor 0) (valorTotal 0))
+  "Retorna os pontos totais das linha do tabuleiro"
+  (let ((l (nth (- index 1) (conta-linhas (tabuleiro no)))))
+    (cond ((= index 5) valorTotal)
+          ((= (apply 'max l) 3) (calcular-valor-linhas no (+ index 1) (+ valor 100) (+ valorTotal 100)))
+          ((= (apply 'max l) 2) (calcular-valor-linhas no (+ index 1) (+ valor 10) (+ valorTotal 10)))
+          ((= (apply 'max l) 1) (calcular-valor-linhas no (+ index 1) (+ valor 1) (+ valorTotal 1)))
+          (t nil))))
+
+
+
+; Teste: (calcular-valor-colunas (criar-no (tabuleiro-teste-A)))
+; resultado: 310
+(defun calcular-valor-colunas (no &optional (index 1) (valor 0) (valorTotal 0))
+  "Retorna os pontos totais das colunas do tabuleiro"
+  (let ((l (nth (- index 1) (conta-colunas (tabuleiro no)))))
+    (cond ((= index 5) valorTotal)
+          ((= (apply 'max l) 3) (calcular-valor-colunas no (+ index 1) (+ valor 100) (+ valorTotal 100)))
+          ((= (apply 'max l) 2) (calcular-valor-colunas no (+ index 1) (+ valor 10) (+ valorTotal 10)))
+          ((= (apply 'max l) 1) (calcular-valor-colunas no (+ index 1) (+ valor 1) (+ valorTotal 1)))
+          (t nil))))
+
+
+
+; Teste: (calcular-valor-diagonal-1 (criar-no (tabuleiro-teste-A)))
+; resultado: 10
+(defun calcular-valor-diagonal-1 (no)
+  "Retorna os pontos da diagonal 1 do tabuleiro"
+  (let ((l (conta-diagonal-1 (tabuleiro no)))
+        (valorTotal 0))
+    (cond ((= (apply 'max l) 3) (+ valorTotal 100))
+          ((= (apply 'max l) 2) (+ valorTotal 10))
+          ((= (apply 'max l) 1) (+ valorTotal 1))
+          (t nil))))
+
+
+; Teste: (calcular-valor-diagonal-2 (criar-no (tabuleiro-teste-A)))
+; resultado: 100
+(defun calcular-valor-diagonal-2 (no)
+  "Retorna os pontos da diagonal 2 do tabuleiro"
+  (let ((l (conta-diagonal-2 (tabuleiro no)))
+        (valorTotal 0))
+    (cond ((= (apply 'max l) 3) (+ valorTotal 100))
+          ((= (apply 'max l) 2) (+ valorTotal 10))
+          ((= (apply 'max l) 1) (+ valorTotal 1))
+          (t nil))))
+
+
+; Teste: (avaliar-no (criar-no (tabuleiro-teste-A)))
+; resultado: 
+(defun avaliar-no (no)
+  "Recebe um no e efetua os calculos de avaliacao"
+  (cond ((null no) nil)
+        ((no-solucao no) 2000)
+        (t (+ (calcular-valor-linhas no) (calcular-valor-colunas no) (calcular-valor-diagonal-1 no) (calcular-valor-diagonal-2 no))))
+)
 
 
 
@@ -393,6 +500,6 @@
   "Retorna todo o tabuleiro com peca alterada caso a posicao em que se va meter a peca esteja vazia"
   (cond
    ((or (< linha 1)(> linha 4)) (format t "Linha invalida"))
-   ((not(casa-vaziap (conversor-coluna coluna) linha (tabuleiro no))) nil) 
-   (t (imprime-tabuleiro (criar-no (list (substituir (conversor-coluna coluna) linha peca (tabuleiro no)) (remover-peca peca (reserva no))))))))
+   ((not(casa-vaziap (conversor-coluna-ln coluna) linha (tabuleiro no))) nil) 
+   (t (imprime-tabuleiro (criar-no (list (substituir (conversor-coluna-ln coluna) linha peca (tabuleiro no)) (remover-peca peca (reserva no))))))))
 
