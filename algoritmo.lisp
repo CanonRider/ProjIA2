@@ -4,20 +4,24 @@
 ;;;; Autor: João Azevedo  nº180221119
 ;;;; Autor: Sara Carvalho  nº180221048
 
-
+;(setf *print-level* 100)
+;jogador1 -> 1
+;jogador2 -> -1 
 
 ;; Negamax com cortes alfabeta - Chamada inicial -> (negamax noRoot profundidade most-negative-fixnum most-positive-fixnum)
-(defun negamax(no profundidade alfa beta)
-  ""
-  (let ((nos-filhos (ordena-nos (gerar-sucessores no profundidade)))
-        (value most-negative-fixnum))
-    (cond ((or (= profundidade 0) (equal (no-folha no) T)) (get-valor no))
-          (t (loop for i from 0 to (- (list-length nos-filhos) 1) do
-                (setq value (max value -(negamax i (- profundidade 1) (- beta) (- alfa))))
-                (setq alfa (max alfa value))
-                (when (>= alfa beta) (return))))))) ; cut-off
-
-
+(defun negamax(no profundidade jogador &optional (alfa most-negative-fixnum) (beta most-positive-fixnum))
+  "Função do algoritmo negamax" 
+  (cond ((or (= profundidade 0) (no-folha no)) (no-resultado no jogador))
+        (t (let ((nos-filhos (ordenar-nos (gerar-sucessores no profundidade)))
+                 (value most-negative-fixnum))
+             (loop for i from 0 to (- (list-length nos-filhos) 1) do
+                   (cond ((= (list-length nos-filhos) 1) (format t "dentro do 2º cond ~%") (no-resultado nos-filhos jogador))
+                         (t (format t "antes do 2º let ~%") (let ((no-nega (negamax (nth i nos-filhos) (- profundidade 1) (- jogador) (- beta) (- alfa))))
+                              (setq value (max value (get-valor no-nega)))
+                              (setq alfa (max alfa value))
+                              (format t "antes do when ~%")
+                              (when (>= alfa beta) no-nega) )))))))) ; cut-off
+                            ;(if (>= alfa beta) value))))))))
 
 
 ;;; ---FUNÇÕES AUXILIARES---
@@ -27,15 +31,20 @@
   (cond 
    ((null (reserva no)) T)
    ((no-solucao no) T); caso seja nó solução retorna T pois é folha.
-   (T nil)))
+   (t nil)))
 
 
-(defun orderna-nos (lista)
+(defun ordenar-nos (lista)
   "Ordena os nós da lista pelo seu valor"
-  (let ((valor (get-valor (car lista))))
-    (cond ((null lista) "lista ordenada")
-          (t (sort lista #'> :key valor))))
+  (if (> (list-length lista) 1)
+      (sort lista #'> :key 'avaliar-no) 
+    nil)
 )
 
+
+
+(defun no-resultado (no jogador)
+  "Função que retorna o nó resultado com o valor"
+  (list (first no) (second no) (third no) (* (fourth no) jogador)))
 
 
