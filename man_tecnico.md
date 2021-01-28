@@ -65,10 +65,14 @@ As funções auxiliares utilizadas no algoritmo negamax implementado por nós fo
 - max;
 
 
-### **Funções auxiliares: ordena-nos**
+### **Funções auxiliares: ordenar-nos**
 
 ```lisp
-Para o codigo do ordena-nos
+(defun ordenar-nos (lista)
+  "Ordena os nós da lista pelo seu valor"
+    (cond ((null lista) "lista ordenada")
+          (t (sort lista #'> :key 'get-valor)))
+)
 ```
 
 ### **Funções auxiliares: gerar-sucessores**

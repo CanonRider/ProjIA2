@@ -19,6 +19,10 @@
 	(beta most-positive-fixnum))
 	(funcall negamax no profundidade alfa beta)))
 
+(defun jogar(estado tempo)
+
+)
+
 (defun get-tabuleiro_init()
 "Retorna um tabuleiro novo"
 '(
@@ -53,6 +57,7 @@
     (format t "Que jogador começa? ~%")
     (format t "1- Humano ~%")
     (format t "2- Computador ~%")
+    (format t "R:")
     (let ((resposta (read)))
       (cond ((= resposta 1) 1)
             (t 2)))))
@@ -63,31 +68,40 @@
     (format t "Qual o modo de jogo? ~%")
     (format t "1- Humano vs computador ~%")
     (format t "2- Computador vs Computador ~%")
+    (format t "R:")
     (let ((resposta (read)))
       (cond ((= resposta 1) 1)
             (t 2)))))
 			
 			
 (defun ler-tempo-jogada()
-	"Permite fazer a leitura do tempo que o computador tem para jogar"
-      (progn
-    (format t "Quanto tempo limite para o computador jogar? (entre 1000 e 5000) ~%")
-    (read)
-    ))
+  "Permite fazer a leitura do tempo que o computador tem para jogar"
+  (progn
+    (format t "Quanto tempo limite para o computador jogar? (entre 1000 e 5000 ms) ~%")
+    (format t "R:")
+    (read)))
 
 (defun ler-tempo-jogo()
-	"Permite fazer leitura do tempo limite de jogo"
-		(progn
+  "Permite fazer leitura do tempo limite de jogo"
+  (progn
     (format t "Tempo limite para o jogo? ~%")
-    (read)
-    ))
-		
+    (format t "R:")
+    (read)))
 
-;; ler-profundidade
 (defun ler-profundidade()
-"Permite fazer a leitura da profundidade limite para o algoritmo negamax."
-    (progn
+  "Permite fazer a leitura da profundidade limite para o algoritmo negamax."
+  (progn
     (format t "Qual a profundidade limite? ~%")
-    (read)
-    ))
+    (format t "R:")
+    (read)))
+
+(defun ler-jogada()
+  "ermite fazer a leitrua da jogada do utilizador"
+  (progn
+    (format t "Qual a sua jogada? ~%")
+    (format t "Insira a coluna e depois a linha:")
+    (let
+      (coluna (read))
+      (linha (read))
+      (list coluna linha))))
 
