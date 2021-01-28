@@ -101,7 +101,7 @@
     (format t "Qual a sua jogada? ~%")
     (format t "Insira a coluna e depois a linha:")
     (let
-      (coluna (read))
-      (linha (read))
-      (list coluna linha))))
+      (col (read))
+      (lin (read))
+      (list col lin))))
 
