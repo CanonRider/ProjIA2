@@ -112,14 +112,14 @@
 ;;;                                                                SELETORES
 ;;; _______________________________________________________________________________________________________________________________________________
 
-(defun criar-no-aux (allTab &optional (profundidade 0) (noPai nil))
-  "Criar estrutura de um no sem valor, função auxiliar para a função criar-no"
-  (list allTab profundidade noPai))
 
 (defun criar-no(allTab &optional (profundidade 0) (noPai nil))
   "Criar estrutura de um no"
   (list allTab profundidade noPai (avaliar-no (criar-no-aux allTab profundidade noPai))))
 
+(defun criar-no-aux (allTab &optional (profundidade 0) (noPai nil))
+  "Criar estrutura de um no sem valor, função auxiliar para a função criar-no"
+  (list allTab profundidade noPai))
 
 (defun get-allTab(no)
   "Funcao que devolve o tabuleiro todo do no incluindo as pecs de reserva"
@@ -144,7 +144,7 @@
   (third no))
 
 (defun get-valor (no)
-  "Retorna o valor d nó"
+  "Retorna o valor do nó"
   (fourth no))
 
 

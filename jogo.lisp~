@@ -23,6 +23,29 @@
     )
 )
 
+(defun probD ()
+  '(
+    (
+     ((branca quadrada baixa cheia) (branca redonda alta cheia) (preta redonda alta cheia) (preta quadrada baixa oca))
+     (0 0 0 0)
+     (0 0 0 0)
+     (0 0 0 0)
+     )
+    (
+     (branca quadrada alta cheia)
+     (branca quadrada baixa oca)
+     (preta quadrada alta cheia)
+     (preta quadrada alta oca)
+     (preta quadrada baixa cheia)
+     (branca redonda baixa oca)
+     (branca redonda alta cheia)
+     (branca redonda baixa cheia)
+     (preta redonda alta oca)
+     (preta redonda baixa cheia)
+     )
+    )
+)
+
 (defun tabuleiro-teste-SOLUCAO ()
   '(
     (
@@ -64,22 +87,24 @@
      (0 0 0 0)
      )
     (
-     (branca quadrada alta oca)
-     (preta quadrada baixa cheia)
-     (preta quadrada alta oca)
-     (branca redonda alta oca)
-     (preta redonda alta oca)
-     (branca redonda alta cheia)
-     (preta redonda alta cheia)
-     (preta redonda baixa cheia)
-     (branca redonda baixa oca)
      (branca quadrada alta cheia)
-     (preta redonda baixa oca)
+     (branca quadrada alta oca)
+     (branca quadrada baixa oca)
      (branca quadrada baixa cheia)
      (preta quadrada alta cheia)
+     (preta quadrada alta oca)
      (preta quadrada baixa oca)
+     (preta quadrada baixa cheia)
+     (branca redonda alta cheia)
+     (branca redonda alta oca)
      (branca redonda baixa cheia)
-     (branca quadrada baixa oca))))
+     (branca redonda baixa oca)
+     (preta redonda alta cheia)
+     (preta redonda alta oca)
+     (preta redonda baixa cheia)
+     (preta redonda baixa oca)
+     )
+    ))
 
 
 ;;; _______________________________________________________________________________________________________________________________________________
@@ -87,9 +112,13 @@
 ;;;                                                                SELETORES
 ;;; _______________________________________________________________________________________________________________________________________________
 
-(defun criar-no(allTab &optional (profundidade 0) (noPai nil) (valor nil))
+(defun criar-no-aux (allTab &optional (profundidade 0) (noPai nil))
+  "Criar estrutura de um no sem valor, função auxiliar para a função criar-no"
+  (list allTab profundidade noPai))
+
+(defun criar-no(allTab &optional (profundidade 0) (noPai nil))
   "Criar estrutura de um no"
-  (list allTab profundidade noPai valor))
+  (list allTab profundidade noPai (avaliar-no (criar-no-aux allTab profundidade noPai))))
 
 
 (defun get-allTab(no)
@@ -112,6 +141,10 @@
 
 (defun get-pai(no)
   "Retorna o no pai de um no"
+  (third no))
+
+(defun get-valor (no)
+  "Retorna o valor d nó"
   (fourth no))
 
 
@@ -149,26 +182,6 @@
   "Retorna diagonal do canto inferior esquerdo ao o canto superior direito"
   (list (celula 1 4 tab) (celula 2 3 tab) (celula 3 2 tab) (celula 4 1 tab))
 )
-
-(defun casa-vaziap(coluna linha tab)
-  "Retorna t se a casa estiver vazia e nil caso contrario"
-  (cond
-   ((equal (celula coluna linha tab) 0) T)
-   (t nil)))
-
-
-(defun lista-completa (l)
-  "Funcao que retorna T se a linha/coluna/diagonal nÃ£o tiver espacos vazios e NIL caso tenha"
-  (cond
-   ((or (equal (first l) 0) (equal (second l) 0) (equal (third l) 0) (equal (fourth l) 0)) nil)
-   (t)))
-
-(defun repetidop(listaDest no)
-  "Retorna T se no ja¡ existir na lista de destino"
-  (cond
-   ((null listaDest) nil)
-   ((equal (car listaDest) no) t)
-   (t (repetidop (cdr listaDest) no))));T caso car da lista seja igual ao no; nil caso nao encontre no igual na lista
 
 
 ;;; _______________________________________________________________________________________________________________________________________________
@@ -241,7 +254,7 @@
      (verifica-solucao-lista (coluna 3 tab))
      (verifica-solucao-lista (coluna 4 tab))
      (verifica-solucao-lista (diagonal-1 tab))
-     (verifica-solucao-lista (diagonal-2 tab))) (imprime-tabuleiro no) (format t "~%GANHOU O JOGO!!!~%~%"))))
+     (verifica-solucao-lista (diagonal-2 tab))) t)));(imprime-tabuleiro no) (format t "~%GANHOU O JOGO!!!~%~%"))))
 )
 
 
@@ -261,7 +274,7 @@
   (format t  " ----| ~%")
   (format t  "  3  |  ~A  ~A  ~A  ~A ~%" (celula 1 3 (tabuleiro no)) (celula 2 3 (tabuleiro no)) (celula 3 3 (tabuleiro no)) (celula 4 3 (tabuleiro no)))
   (format t  " ----| ~%")
-  (format t  "  4  |  ~A  ~A  ~A  ~A ~%~%~%~%PeÃ§as de Reserva:" (celula 1 4 (tabuleiro no)) (celula 2 4 (tabuleiro no)) (celula 3 4 (tabuleiro no)) (celula 4 4 (tabuleiro no)))
+  (format t  "  4  |  ~A  ~A  ~A  ~A ~%~%~%~%Peças de Reserva:" (celula 1 4 (tabuleiro no)) (celula 2 4 (tabuleiro no)) (celula 3 4 (tabuleiro no)) (celula 4 4 (tabuleiro no)))
   (reserva no)
 )
 
@@ -286,17 +299,29 @@
 ;;;                                                                FUNCOES AUXILIARES
 ;;; _______________________________________________________________________________________________________________________________________________
 
+(defun casa-vaziap(coluna linha tab)
+  "Retorna t se a casa estiver vazia e nil caso contrario"
+  (cond
+   ((equal (celula coluna linha tab) 0) T)
+   (t nil)))
+
+
+(defun lista-completa (l)
+  "Funcao que retorna T se a linha/coluna/diagonal nÃ£o tiver espacos vazios e NIL caso tenha"
+  (cond
+   ((or (equal (first l) 0) (equal (second l) 0) (equal (third l) 0) (equal (fourth l) 0)) nil)
+   (t)))
+
+(defun repetidop(listaDest no)
+  "Retorna T se no ja¡ existir na lista de destino"
+  (cond
+   ((null listaDest) nil)
+   ((equal (car listaDest) no) t)
+   (t (repetidop (cdr listaDest) no))));T caso car da lista seja igual ao no; nil caso nao encontre no igual na lista
+
 (defun juntar-listas(listaDest listaOrig)
   "Junta duas listas numa so e retorna essa mesma lista"
   (append listaDest listaOrig))
-
-;no-folha -> funcao booleana que verifica se o no é no terminal, ou seja se não tiver mais sucessores ou se for solução
-(defun no-folha (no)
-  "Retorna T se nó for um nó folha caso contrário retorna nil"
-  (cond 
-   ((null (reserva no)) T)
-   ((no-solucao no) T); caso seja nó solução retorna T pois é folha.
-   (T nil)))
 
 
 ;responsável por transformar uma letra em número
@@ -406,7 +431,7 @@
           ((= (apply 'max l) 3) (calcular-valor-linhas no (+ index 1) (+ valor 100) (+ valorTotal 100)))
           ((= (apply 'max l) 2) (calcular-valor-linhas no (+ index 1) (+ valor 10) (+ valorTotal 10)))
           ((= (apply 'max l) 1) (calcular-valor-linhas no (+ index 1) (+ valor 1) (+ valorTotal 1)))
-          (t nil))))
+          (t (+ valorTotal 0)))))
 
 
 
@@ -419,7 +444,7 @@
           ((= (apply 'max l) 3) (calcular-valor-colunas no (+ index 1) (+ valor 100) (+ valorTotal 100)))
           ((= (apply 'max l) 2) (calcular-valor-colunas no (+ index 1) (+ valor 10) (+ valorTotal 10)))
           ((= (apply 'max l) 1) (calcular-valor-colunas no (+ index 1) (+ valor 1) (+ valorTotal 1)))
-          (t nil))))
+          (t (+ valorTotal 0)))))
 
 
 
@@ -432,7 +457,7 @@
     (cond ((= (apply 'max l) 3) (+ valorTotal 100))
           ((= (apply 'max l) 2) (+ valorTotal 10))
           ((= (apply 'max l) 1) (+ valorTotal 1))
-          (t nil))))
+          (t (+ valorTotal 0)))))
 
 
 ; Teste: (calcular-valor-diagonal-2 (criar-no (tabuleiro-teste-A)))
@@ -444,11 +469,11 @@
     (cond ((= (apply 'max l) 3) (+ valorTotal 100))
           ((= (apply 'max l) 2) (+ valorTotal 10))
           ((= (apply 'max l) 1) (+ valorTotal 1))
-          (t nil))))
+          (t (+ valorTotal 0)))))
 
 
 ; Teste: (avaliar-no (criar-no (tabuleiro-teste-A)))
-; resultado: 
+; resultado: 730
 (defun avaliar-no (no)
   "Recebe um no e efetua os calculos de avaliacao"
   (cond ((null no) nil)
@@ -457,37 +482,37 @@
 )
 
 
-
 ;;; _______________________________________________________________________________________________________________________________________________
 ;;;
 ;;;                                                               SUCESSORES
 ;;; _______________________________________________________________________________________________________________________________________________
 
+; Teste: (gerar-nos-posicao 1 1 (criar-no (get-tabuleiro_init)) (reserva (criar-no (get-tabuleiro_init))))
 (defun gerar-nos-posicao(x y no reserv)
   "Retorna numa lista todos os nós filhos possíveis numa dada posição (x,y)"
   (cond
     ((null reserv) nil)
     ((not(casa-vaziap x y (tabuleiro no))) nil)
-    (t (cons (criar-no (operador (conversor-coluna-nl x) y (car reserv) (get-allTab no)) (+ (get-profundidade no) 1) no nil) (gerar-nos-posicao x y no (cdr reserv))))));Faz lista com todos os filhos possíveis do nó recebido numa dada posição, já na forma de nó.
+    (t (cons (criar-no (get-allTab (operador (conversor-coluna-nl x) y (car reserv) no)) (+ (get-profundidade no) 1) no) (gerar-nos-posicao x y no (cdr reserv))))));Faz lista com todos os filhos possíveis do nó recebido numa dada posição, já na forma de nó.
 
 
 
-(defun gerar-sucessores(no profundidade &optional (x 'A) (y 1))
+(defun gerar-sucessores(no profundidade)
   "Retorna lista dos filhos do no. Caso a reserva esteja vazia retorna nil"
-  (let
-      (col_num (conversor-coluna-ln x))
-
     (cond
      ((null (reserva no)) nil)
-     ((= profundidade 0) nil);Se profundidade é 0 então chegou à profundidade máxima pedida pelo user por isso não irá expandir nós e retorna nil.
-     ((> (col_num) 4) (gerar-sucessores no profundidade 'A (+ y 1)));se coluna for maior que 4 passa para a linha a seguir.
-     ((> y 4) nil);se a linha for inválida é porque já não há posições por avaliar. Retorna nil.
-     ((not (casa-vaziap col_num y (tabuleiro no))) (gerar-sucessores no profundidade (conversor-coluna-nl (+ (col_num) 1)) y));se posição não estiver vazia, vai para a próxima coluna.
-     (t (append (gerar-nos-posicao (col_num) y no (reserva no)) (gerar-sucessores no profundidade (conversor-coluna-nl (+ (col_num) 1)) y))))));faz lista de todos os filhos do nó recebido.
+     ((= profundidade 0) no)
+     (t (gerar-colunas no))))
+     
 
+(defun gerar-colunas (no &optional (col 4) (lista '()))
+  (cond ((< col 1) lista)
+        (t (gerar-colunas no (- col 1) (gerar-linhas no col lista)))))
 
-
-
+(defun gerar-linhas (no col lista &optional (lin 4))
+  (cond ((< lin 1) lista)
+        ((casa-vaziap col lin (tabuleiro no)) (gerar-linhas no col (juntar-listas lista (gerar-nos-posicao col lin no (reserva no))) (- lin 1)))
+        (t (gerar-linhas no col lista (- lin 1)))))
 
 ;;; _______________________________________________________________________________________________________________________________________________
 ;;;
@@ -501,5 +526,5 @@
   (cond
    ((or (< linha 1)(> linha 4)) (format t "Linha invalida"))
    ((not(casa-vaziap (conversor-coluna-ln coluna) linha (tabuleiro no))) nil) 
-   (t (imprime-tabuleiro (criar-no (list (substituir (conversor-coluna-ln coluna) linha peca (tabuleiro no)) (remover-peca peca (reserva no))))))))
+   (t (criar-no (list (substituir (conversor-coluna-ln coluna) linha peca (tabuleiro no)) (remover-peca peca (reserva no)))))));(imprime-tabuleiro (criar-no (list (substituir (conversor-coluna-ln coluna) linha peca (tabuleiro no)) (remover-peca peca (reserva no))))))))
 
