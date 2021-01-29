@@ -56,4 +56,4 @@
 
 (defun resultado (no jogador tempo cortes)
   "Função que retorna o nó resultado com as estatísticas do valor, profundidade e cortes efetuados"
-  (list (no-resultado no jogador) (list (get-valor (no-resultado no jogador)) (get-profundidade no) cortes)))
+  (list (no-resultado no jogador) (list (tempo-usado tempo) (get-valor (no-resultado no jogador)) (get-profundidade no) cortes)))
