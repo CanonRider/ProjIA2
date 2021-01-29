@@ -9,7 +9,26 @@ Sara Carvalho nº 180221048
 
 <div style="page-break-after: always"></div>
 
-## **O jogo do 4: Regras**
+
+## **Introdução**
+
+Para este projeto no âmbito da unidade curricular de Inteligência Artificial, foi nos pedido para criar um jogo utilizando ou o algoritmos alfabeta ou o algoritmo negamax. O nosso grupo escolheu o negamax como o algoritmo base do nosso jogo.
+
+## **Instalação**
+
+Para jogar o nosso "jogo do 4" deverá abrir o software LispWorks e abrir e compilar os ficheiros da seguinte ordem:
+
+- **jogo.lisp**
+- **algoritmo.lisp**
+- **interact.lisp**
+
+Após isso deverá abrir o listener do LispWorks e escrever o comando Iniciar como é demostrado abaixo:
+
+```lisp
+CL-USER 1 > (iniciar)
+```
+
+## **Regras**
 
 O jogo do 4 é um jogo de tabuleiro. Este tabuleiro está dividido em 4 linhas e em 4 colunas. O grande objetivo do jogo, que precisa de ser cumprido para se vencer o jogo, é o alinhamento quer seja por uma linha, por uma coluna ou pelas diagonais de 4 peças que contenham pelo menos 1 característica em comum. O primeiro jogador a conseguir fazer isso ganha o jogo. Caso o tabuleiro fique cheio e não se verificar uma condição de viória o jogo acaba empatado.
 
@@ -57,6 +76,7 @@ No nosso "jogo do 4" o utilizador apenas tem poder de decisão na jogada que rea
 
 <div style="page-break-after: always"></div>
 
-## **Informação produzida durante a execução do jogo**
+## **Inputs e outputs**
 
-Durante a duração do jogo vão sendo guardados dados resultantes de operações efetuadas como o número de nós analisados, o número de cortes efetuados, o tempo gasto em cada jogada e o tabuleiro de jogo. Isto será guardado num ficheiro com o nome de "log.dat"
+Durante a duração do jogo vão sendo guardados dados resultantes de operações efetuadas como o número de nós analisados, o número de cortes efetuados, o tempo gasto em cada jogada e o tabuleiro de jogo. Isto será guardado num ficheiro de output com o nome de "log.dat".
+Todos os inputs serão resultados de interação com o utilizador, todas as informações solicitadas pelo jogo e que o utilizador insere através do seu teclado são os inputs do jogo.
