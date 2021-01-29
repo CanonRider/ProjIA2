@@ -4,27 +4,27 @@
 ;;;; Autor: João Azevedo  nº180221119
 ;;;; Autor: Sara Carvalho  nº180221048
 
-;(setf *print-level* 100)
+;(setf *print-level* 10)
 ;jogador1 -> 1
 ;jogador2 -> -1 
 
 ;; Negamax com cortes alfabeta - Chamada inicial -> (negamax noRoot profundidade most-negative-fixnum most-positive-fixnum)
-(defun negamax(no profundidade jogador &optional (alfa most-negative-fixnum) (beta most-negative-fixnum))
+(defun negamax(no profundidade jogador tempo &optional (alfa most-negative-fixnum) (beta most-negative-fixnum) (tempoInicial (get-universal-time)) (cortes 0))
   "Função do algoritmo negamax" 
-  (cond ((or (= profundidade 0) (no-folha no)) (no-resultado no jogador))
+  (cond ((or (= profundidade 0) (no-folha no) (>= (tempo-usado tempoInicial) tempo)) (resultado no jogador cortes))
         (t (let ((nos-filhos (ordenar-nos (gerar-sucessores no profundidade)))
                  (value most-negative-fixnum))
-             (negamax-aux no profundidade jogador alfa beta nos-filhos value)))))
+             (negamax-aux no profundidade jogador alfa beta nos-filhos value tempoInicial cortes)))))
 
 
-(defun negamax-aux (no profundidade jogador alfa beta nos-filhos value)
+(defun negamax-aux (no profundidade jogador alfa beta nos-filhos value tempoInicial cortes)
   "Função recursiva auxiliar do algoritmo negamax"
-  (cond ((= (list-length nos-filhos) 1) (no-resultado nos-filhos jogador))
-        (t (let ((no-nega (negamax (car nos-filhos) (- profundidade 1) (- jogador) (- beta) (- alfa))))
+  (cond ((= (list-length nos-filhos) 1) (resultado nos-filhos jogador tempoInicial cortes))
+        (t (let ((no-nega (negamax (car nos-filhos) (- profundidade 1) (- jogador) tempoInicial (- beta) (- alfa))))
              (setq value (max value (- (get-valor no-nega))))
              (setq alfa (max alfa value))
-             (cond ((>= alfa beta) no-nega) ;cut-off
-                   (t (negamax-aux no profundidade jogador alfa beta (cdr nos-filhos) value)))))))
+             (cond ((>= alfa beta) (resultado no-nega jogador tempoInicial (+ cortes 1))) ;cut-off
+                   (t (negamax-aux no profundidade jogador alfa beta (cdr nos-filhos) value tempoInicial cortes)))))))
 
 
 ;;; ---FUNÇÕES AUXILIARES---
@@ -44,6 +44,9 @@
     nil)
 )
 
+(defun tempo-usado (tempoInicial)
+  "Função que retorna o tempo usado na jogada"
+  (- (get-universal-time) tempoInicial))
 
 
 (defun no-resultado (no jogador)
@@ -51,3 +54,6 @@
   (list (first no) (second no) (third no) (* (fourth no) jogador)))
 
 
+(defun resultado (no jogador tempo cortes)
+  "Função que retorna o nó resultado com as estatísticas do valor, profundidade e cortes efetuados"
+  (list (no-resultado no jogador) (list (get-valor (no-resultado no jogador)) (get-profundidade no) cortes)))
