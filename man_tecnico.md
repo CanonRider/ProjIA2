@@ -17,11 +17,11 @@ Ao desenvolver este projeto, dividimos o código 3 ficheiros lisp, são eles:
 - interact.lisp
 - jogo.lisp
 
-No ficheiro **algoritmo.lisp** implementamos todas as funções relativas ao algoritmo em si. No nosso caso optámos por escolher o algoritmo negamax para implementar. Qualquer função relativa a este algoritmo está implementada neste ficheiro.
+No ficheiro **algoritmo.lisp** implementamos todas as funções relativas ao algoritmo e as suas funções auxiliares. No nosso caso optámos por escolher o algoritmo negamax para implementar. Qualquer função relativa a este algoritmo está implementada neste ficheiro.
 
-No ficheiro **interact.lisp** implementamos funções responsáveis por ler e escrever em ficheiros e implementamos também funções responsáveis pela interação com o utilizador. Temos funções que leem em que modo o utilizador deseja que o jogo ocorra, se humano vs computador ou computador vs computador, temos funções de leitura de tempos limite, tanto para o computador jogar como para o jogo decorrer, e temos uma função que pede a profundidade máxima que o utilizador deseja.
+No ficheiro **interact.lisp** implementamos funções responsáveis por ler e escrever em ficheiros e implementamos também funções responsáveis pela interação com o utilizador. Temos funções que leem em que modo o utilizador deseja que o jogo ocorra, se humano vs computador ou computador vs computador, temos funções de leitura de tempos limite, tanto para o computador jogar como para o jogo decorrer, temos uma função que pede a profundidade máxima que o utilizador deseja, temos uma função para lermos a jogada de um jogador, entre outras. É aqui que estão também funções responsáveis pelo arranque do jogo, e pelo controlo do jogo, isto é, é a partir destas funções que internamente decidimos a maneira como chamamos as funções para iniciar o jogo com as configurações pedidas pelo jogador.
 
-No ficheiro **jogo.lisp** implementamos funções auxiliares para ajudar no funcionamento do jogo responsáveis pela manipulação de nós. Isto é, desde funções simples como funções que nos dão posições das peças, que nos dizem se uma peça é repetida ou não, até funções mais complexas como funções que imprimem o estado do jogo, que avalião os nós para estes terem um valor atribuído. É também neste ficheiro que se encontram as funções responsáveis pela geração de nós.
+No ficheiro **jogo.lisp** implementamos funções auxiliares para ajudar no funcionamento do jogo responsáveis pela manipulação de nós. Isto é, desde funções simples como funções que nos dão posições das peças, que nos dizem se uma peça é repetida ou não, até funções mais complexas como funções que imprimem o estado do jogo, que avaliam os nós para estes terem um valor atribuído, é aqui que estão também as funções responsáveis pela geração de nós. Temos também um operador e as suas funções auxliares. As funções auxiliares são o "remover-peca" e "substituir", tal como os nomes sugerem uma remove uma peça do tabuleiro, e a outra substitui uma peça no tabuleiro. Já o operador retorna um tabuleiro já com uma nova peça inserida.  
 
 Estes 3 ficheiros estão interligados uma vez que o ficheiro **interact.lisp** vai usar funções implementadas no ficheiro **algoritmo.lisp** e o ficheiro **algoritmo.lisp** vai usar funções implementadas no ficheiro **jogo.lisp** e é por esta razão, que antes de usar o comando _(iniciar)_, temos de abrir e compilar os ficheiros pela seguinte ordem:
 
@@ -33,19 +33,28 @@ Estes 3 ficheiros estão interligados uma vez que o ficheiro **interact.lisp** v
 
 ## **Algoritmo e a sua implementação**
 
-O algoritmo Negamax implementado por nós começa por criar uma variável com o nome "nos-filhos" que será uma lista de nós filhos originados através do nó recebido como argumento, na primeira iteração do algoritmo será o nó root. Esta variável (nos-filhos) irá receber os nós filhos já ordenados pelo seu valor, graças à função auxiliar "ordena-nos". É também criada uma variável com o nome "value" com o maior número possível negativo, uma vez que o objetivo é que esta variável represente inicialmente o infinito negativo. Após isto o algoritmo começa por testas se a profundidade chegou ao seu limite (limite desejado inserido pelo humano) e se o nó em que estamos é um nó folha, ou seja, um nó terminal em que já não é possível expandir mais aquele ramo. Caso se verifique uma destas condições, o algoritmo chama uma função auxiliar responsável por nos dar o valor do nó folha encontrado que é a função "get-valor".
-No caso de nenhuma das condições se verificar, o algoritmo entra num ciclo em que só termina quando o valor da variável "alfa", que é passada como parâmetro da função, for maior ou igual à variável "beta", também ela passada como parâmetro. Enquanto não se verificar a condição de paragem, a variável "nos-filhos", criada no ínicio, será percorrida e enquanto não for pecorrida na sua totalidade o algoritmo irá atribuir o máximo valor à variável "value" entre o seu própio valor e a chamada à função negamax com os parâmetros ajustados a um novo nível de uma árvore, em que a profundidade irá diminuir, e os valores de beta e alfa irão ser o simétrico. O algoritmo faz também uma atribuição ao valor de "alfa" em que "alfa" irá ter como valor o valor máximo entre o própio valor da variável "alfa" e o valor da variável "value".
+O algoritmo Negamax implementado por nós começa por testas se a profundidade chegou ao seu limite (limite desejado inserido pelo humano), se o nó em que estamos é um nó folha, ou seja, um nó terminal em que já não é possível expandir mais aquele ramo e se o tempo de execução do negamax já atingiu o limite desejado, também ele inserido pelo utilizador. Caso se verifique uma destas condições, o algoritmo chama uma função auxiliar responsável por nos dar o resultado do jogo que é a função "resultado".
+No caso de nenhuma das condições se verificar, o algoritmo criar uma variável com o nome "nos-filhos" que será uma lista de nós filhos originados através do nó recebido como argumento, na primeira iteração do algoritmo será o nó root. Esta variável (nos-filhos) irá receber os nós filhos já ordenados pelo seu valor, graças à função auxiliar "ordena-nos". É também criada uma variável com o nome "value" com o maior número possível negativo, uma vez que o objetivo é que esta variável represente inicialmente o infinito negativo. Após isto o algoritmo chama uma função auxiliar "negamax-aux" que começa por verificar se o tamanho da lista recebido como parâmetro "nos-filhos" tem tamanho igual a 1. Caso se verifique esta condição a função retorna o resultado do jogo, caso não se verifique a função cria uma nova variável com nome "no-nega" que terá como valor a chamada da função "negamax" explicada anteriormente. Após isso compara dois valores que serão os valores que estão dentro da variável "value" e do inverso do valor da variável "no-nega" respetivamente e escolhe o valor máximo entre as duas variáveis e guarda na variável "value". Depois disso cria uma nova variável "alfa" que será o máximo entre a variável "alfa" recebida como parâmetro e a variável "value", anteriormente referida. 
+Após isto a função verifica se a variável "alfa" é maior ou igual à variável "beta" que foi recebido nos argumentos da função e caso seja verdade esta condição estamos em condição de corte e retorna o resultado do jogo. Senão vai chamar recursivamente a função "negamax-aux" com os parâmetros ajustados, que neste caso serão o resto da lista de nós filhos "(cdr nos-filhos)".
+
 
 ```lisp
-(defun negamax(no profundidade alfa beta)
-  ""
-  (let ((nos-filhos (ordena-nos (gerar-sucessores no profundidade)))
-        (value most-negative-fixnum))
-    (cond ((or (= profundidade 0) (equal (no-folha no) T)) (get-valor no))
-          (t (loop for i from 0 to (- (list-length nos-filhos) 1) do
-                (setq value (max value -(negamax i (- profundidade 1) (- beta) (- alfa))))
-                (setq alfa (max alfa value))
-                (when (>= alfa beta) (return)))))))
+(defun negamax(no profundidade jogador tempo &optional (alfa most-negative-fixnum) (beta most-negative-fixnum) (tempoInicial (get-universal-time)) (cortes 0))
+  "Função do algoritmo negamax" 
+  (cond ((or (= profundidade 0) (no-folha no) (>= (tempo-usado tempoInicial) tempo)) (resultado no jogador cortes))
+        (t (let ((nos-filhos (ordenar-nos (gerar-sucessores no profundidade)))
+                 (value most-negative-fixnum))
+             (negamax-aux no profundidade jogador alfa beta nos-filhos value tempoInicial cortes)))))
+
+
+(defun negamax-aux (no profundidade jogador alfa beta nos-filhos value tempoInicial cortes)
+  "Função recursiva auxiliar do algoritmo negamax"
+  (cond ((= (list-length nos-filhos) 1) (resultado nos-filhos jogador tempoInicial cortes))
+        (t (let ((no-nega (negamax (car nos-filhos) (- profundidade 1) (- jogador) tempoInicial (- beta) (- alfa))))
+             (setq value (max value (- (get-valor no-nega))))
+             (setq alfa (max alfa value))
+             (cond ((>= alfa beta) (resultado no-nega jogador tempoInicial (+ cortes 1))) ;cut-off
+                   (t (negamax-aux no profundidade jogador alfa beta (cdr nos-filhos) value tempoInicial cortes)))))))
 ```
 
 <div style="page-break-after: always"></div>
@@ -56,10 +65,13 @@ As funções auxiliares utilizadas no algoritmo negamax implementado por nós fo
 
 - ordena-nos;
 - gerar-sucessores;
+- resultado;
 - no-folha;
 - get-valor;
+- tempo-usado;
 - list-length;
 - max;
+- get-universal-time;
 
 ### **Funções auxiliares: ordenar-nos**
 
@@ -106,6 +118,16 @@ Esta função gera todos os sucessores de um dado nó. Caso este nó não tenha 
         (t (gerar-linhas no col lista (- lin 1)))))
 ```
 
+### **Funções auxiliares: resultado**
+
+A função "resultado" é responsável por nos dar algumas estatísticas sobre um dado momento de jogo. Recebe como argumentos um nó um jogador o tempo e a quantidade de cortes. E retorna uma lista com uma série de informação como por exemplo o nó resultado (que nos dá a constituição de um nó com o seu valor), o tempo que foi usado na jogada, o valor do nó, a profundidade do nó e os cortes efetuados.
+
+```lisp
+(defun resultado (no jogador tempo cortes)
+  "Função que retorna o nó resultado com as estatísticas do valor, profundidade e cortes efetuados"
+  (list (no-resultado no jogador) (list (tempo-usado tempo) (get-valor (no-resultado no jogador)) (get-profundidade no) cortes)))
+```
+
 #### **Funções auxiliares: no-folha**
 
 A função "no-folha" diz-nos se um nó que recebe como argumento é um nó folha ou não, testando se este nó não tem peças de reserva e se é um nó solução do problema. Caso estas duas condições se verifiquem retorna verdadeiro caso contrário retorna falso.
@@ -129,6 +151,17 @@ A função "get-valor" é uma função muito simples que só nos retorna o quart
   (fourth no))
 ```
 
+#### **Funções auxiliares: tempo-usado**
+
+"tempo-usado" é uma função muito simples que apenas nos calcula o tempo que uma jogada demorou a ser feita. Recebe um tempo inicial e retorna o tempo da jogada.
+
+```lisp
+(defun tempo-usado (tempoInicial)
+  "Função que retorna o tempo usado na jogada"
+  (- (get-universal-time) tempoInicial))
+```
+
+
 #### **Funções auxiliares: list-length**
 
 A função "list-length" é um função que já está implementada na linguagem lisp. O nosso objetivo era com esta função obter o tamanho de uma lista e uma vez que já existiam funções implementadas, reutilizámos o código disponível.
@@ -136,6 +169,10 @@ A função "list-length" é um função que já está implementada na linguagem 
 #### **Funções auxiliares: max**
 
 À semelhança da função "list-length", é uma função também já implementada em lisp em que apenas aproveitámos para utilizar código já disponível pelo lisp. Com esta função queríamos obter o máximo valor entre dois números.
+
+#### **Funções auxiliares: *get-universal-time*
+
+À semelhança das duas funçõe santeriores, também esta é uma função implementada em lisp disponível que aproveitámos para poder obter o tempo exato na altura em que se invoca esta função.
 
 <div style="page-break-after: always"></div>
 

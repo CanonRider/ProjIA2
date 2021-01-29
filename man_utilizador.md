@@ -72,11 +72,11 @@ São alguns exemplos de questões em que irão ser solicitadas respostas ao util
 
 ## **Limitações do utilizador**  
 
-No nosso "jogo do 4" o utilizador apenas tem poder de decisão na jogada que realiza cada vez que é o seu turno de jogo e nas questões que le são colocadas no início de jogo, fora isso a maneira como se processa o jogo está escondida do jogador, este apenas tem acesso a uma representação do tabuleiro para decidir qual irá ser a sua jogada. A maneira como serão processados os dados e a própria jogada do computador o jogador não tem qualquer tipo de acesso.
+No nosso "jogo do 4" o utilizador apenas tem poder de decisão na jogada que realiza cada vez que é o seu turno de jogo e nas questões que lhe são colocadas no início de jogo, fora isso a maneira como se processa o jogo está escondida do jogador, este apenas tem acesso a uma representação do tabuleiro para decidir qual irá ser a sua jogada. A maneira como serão processados os dados e a própria jogada do computador o jogador não tem qualquer tipo de acesso.
 
 <div style="page-break-after: always"></div>
 
 ## **Inputs e outputs**
 
-Durante a duração do jogo vão sendo guardados dados resultantes de operações efetuadas como o número de nós analisados, o número de cortes efetuados, o tempo gasto em cada jogada e o tabuleiro de jogo. Isto será guardado num ficheiro de output com o nome de "log.dat".
+Durante o decorrer do jogo vão sendo guardados dados resultantes de ações efetuadas como o número de nós analisados, o número de cortes efetuados, o tempo gasto em cada jogada e o tabuleiro de jogo. Isto será guardado num ficheiro de output com o nome de "log.dat".
 Todos os inputs serão resultados de interação com o utilizador, todas as informações solicitadas pelo jogo e que o utilizador insere através do seu teclado são os inputs do jogo.
