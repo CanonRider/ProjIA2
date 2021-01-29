@@ -5,19 +5,27 @@
 ;;;; Autor: Sara Carvalho  nº180221048
 
 
-;;; Inicialização do programa
-;; iniciar
+;;; _______________________________________________________________________________________________________________________________________________
+;;;
+;;;                                                            INICALIZAÇÃO DO PROGRAMA
+;;; _______________________________________________________________________________________________________________________________________________
 (defun iniciar ()
-"Permite iniciar o programa"
-  (let*((modo_jogo (ler-modo-jogo))
-	(jogador_init (ler-jogador)) ; só se o modo for 1
-        (profundidade (ler-profundidade))
-	(tempo_jogada (ler-tempo-jogada));;Caso seja o modo 1 | Falta acrescentar no negamax
-	(tempo_jogo (ler-tempo-jogo)); Caso seja modo 2
-	(no_init (criar-no (get-tabuleiro_init)))
-	(alfa most-negative-fixnum)
-	(beta most-positive-fixnum))
-	(funcall negamax no profundidade alfa beta)))
+  "Inicia o programa"
+  (progn
+    (format t "**************************************~%")
+    (format t "*    BEM VINDO AO JOGO DO QUATRO!!   *~%")
+    (format t "**************************************~%~%")
+    (let* ((no-inicial (criar-no (get-tabuleiro_init)))
+           (profundidade (ler-profundidade))
+           (tempo-jogada (ler-tempo-jogada))
+           (modo-jogo (ler-modo-jogo)))
+      (if (= modo-jogo 1) ;se escolher humano vs computador
+          (modo-humano-computador no-inicial profundidade)
+        (format t "joga computador vs computador - ~A" modo-jogo)))))
+
+
+
+;;; ---TABULEIRO INICIAL---
 
 (defun get-tabuleiro_init()
 "Retorna um tabuleiro novo"
@@ -47,15 +55,8 @@
      (branca quadrada baixa oca))))
 
 
-(defun ler-jogador ()
-  "Permite fazer a leitura do jogador que começa a jogar"
-  (progn
-    (format t "Que jogador começa? ~%")
-    (format t "1- Humano ~%")
-    (format t "2- Computador ~%")
-    (let ((resposta (read)))
-      (cond ((= resposta 1) 1)
-            (t 2)))))
+
+;;; ---FUNÇÕES DE LEITURA---
 
 (defun ler-modo-jogo()
   "Permite fazer a leitura do modo de jogo"
@@ -66,28 +67,110 @@
     (let ((resposta (read)))
       (cond ((= resposta 1) 1)
             (t 2)))))
+
+(defun ler-jogador ()
+  "Permite fazer a leitura do jogador que começa a jogar"
+  (progn
+    (format t "Que jogador começa? ~%")
+    (format t "1- Humano ~%")
+    (format t "2- Computador ~%")
+    (let ((resposta (read)))
+      (cond ((= resposta 1) 1)
+            (t 2)))))
 			
 			
 (defun ler-tempo-jogada()
-	"Permite fazer a leitura do tempo que o computador tem para jogar"
-      (progn
-    (format t "Quanto tempo limite para o computador jogar? (entre 1000 e 5000) ~%")
-    (read)
-    ))
+  "Permite fazer a leitura do tempo que o computador tem para jogar"
+  (progn
+    (format t "Quanto tempo limite para o computador jogar (entre 1000 e 5000)?  ")
+    (read)))
 
 (defun ler-tempo-jogo()
-	"Permite fazer leitura do tempo limite de jogo"
-		(progn
-    (format t "Tempo limite para o jogo? ~%")
-    (read)
-    ))
+  "Permite fazer leitura do tempo limite de jogo"
+  (progn
+    (format t "Tempo limite para o jogo? ")
+    (read)))
 		
 
-;; ler-profundidade
 (defun ler-profundidade()
-"Permite fazer a leitura da profundidade limite para o algoritmo negamax."
-    (progn
-    (format t "Qual a profundidade limite? ~%")
-    (read)
-    ))
+  "Permite fazer a leitura da profundidade limite para o algoritmo negamax."
+  (progn
+    (format t "Qual a profundidade limite? ")
+    (read)))
 
+
+(defun ler-jogada()
+  "Permite fazer a leitura da jogada do utilizador"
+  (progn
+    (format t "~%~%Qual a sua jogada? ~%")
+    (format t "Insira a coluna e depois a linha (ex: (A 1) ): ")
+    (let((coordenadas (read)))
+      coordenadas)))
+
+(defun ler-peca ()
+  "Permite fazer a leitura da peça que o jogador quer jogar"
+  (progn
+    (format t "~%~% Escolha uma peça da lista de peças de reserva (ex: (PRETA QUADRADA ALTA CHEIA) ):  ")
+    (let((peca (read)))
+      peca)))
+
+(defun mostra-tabuleiro (no)
+  "Apresenta o jogo de forma legivel no ecra com o tabuleiro e as pecas de reserva"
+  (format t  "~%~%     |  A  |  B  |  C  |  D   ~%")
+  (format t  " ----|----------------------- ~%")
+  (format t  "  1  |  ~A  ~A  ~A  ~A ~%" (celula 1 1 (tabuleiro no)) (celula 2 1 (tabuleiro no)) (celula 3 1 (tabuleiro no)) (celula 4 1 (tabuleiro no)))
+  (format t  " ----| ~%")
+  (format t  "  2  |  ~A  ~A  ~A  ~A ~%" (celula 1 2 (tabuleiro no)) (celula 2 2 (tabuleiro no)) (celula 3 2 (tabuleiro no)) (celula 4 2 (tabuleiro no)))
+  (format t  " ----| ~%")
+  (format t  "  3  |  ~A  ~A  ~A  ~A ~%" (celula 1 3 (tabuleiro no)) (celula 2 3 (tabuleiro no)) (celula 3 3 (tabuleiro no)) (celula 4 3 (tabuleiro no)))
+  (format t  " ----| ~%")
+  (format t  "  4  |  ~A  ~A  ~A  ~A ~%~%~%~%Peças de Reserva:~%" (celula 1 4 (tabuleiro no)) (celula 2 4 (tabuleiro no)) (celula 3 4 (tabuleiro no)) (celula 4 4 (tabuleiro no)))
+  (format t "~{~A~^, ~}.~%" (reserva no)))
+
+
+
+;;; _______________________________________________________________________________________________________________________________________________
+;;;
+;;;                                                              FUNÇÕES DAS JOGADAS
+;;; _______________________________________________________________________________________________________________________________________________
+
+(defvar *jogada*)
+
+(defun jogada-humana (estado coordenadas peca)
+  "Função que representa a jogada humana"
+  (setq *jogada* (operador (first coordenadas) (second coordenadas) peca estado))
+  (mostra-tabuleiro *jogada*)
+)
+
+
+;INICIAL: (negamax noRoot profundidade most-negative-fixnum most-positive-fixnum)
+(defun jogada-computador (estado profundidade)
+  "Função que representa a jogada do computador"
+  ;(negamax no profundidade))
+  (format t "~%_____________________________________________________________________________________________~%Jogada do Computador")
+  (setq *jogada* (car (gerar-sucessores estado profundidade)))
+  (mostra-tabuleiro *jogada*))
+
+
+
+(defun modo-humano-computador (estado profundidade)
+  ""
+  (let ((jogador1 (ler-jogador)))
+    (cond ((= jogador1 1) ;se escolher o humano
+           (let* ((peca (ler-peca))
+                  (coordenadas (ler-jogada)))
+             ;(mostra-tabuleiro estado)
+             (jogadas-modo1 (jogada-humana estado coordenadas peca) 2 profundidade)))
+           ((= jogador1 2) (jogadas-modo1 (jogada-computador estado profundidade) 1 profundidade))
+          (t (format t "Jogador inválido") (modo-humano-computador estado profundidade)))))
+
+;jogador humano - 1
+;jogador computador - 2
+(defun jogadas-modo1 (estado jogador &optional (profundidade 0))
+  ""
+  (cond ((no-solucao estado) (imprime-tabuleiro estado) (format t "O JOGADOR %A GANHOUUUU!!!" jogador))
+        (t (cond ((= jogador 1) 
+                  (let* ((peca (ler-peca))
+                         (coordenadas (ler-jogada)))
+                    (jogadas-modo1 (jogada-humana estado coordenadas peca) 2 profundidade)))
+                 (t (jogadas-modo1 (jogada-computador estado profundidade) 1))))))

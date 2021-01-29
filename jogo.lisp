@@ -5,7 +5,7 @@
 ;;;; Autor: Sara Carvalho  nº180221048
 
 
-;;; Tabuleiro teste e tabuleiro solucao
+;;; Tabuleiro testes e tabuleiro solucao
 (defun tabuleiro-teste-A ()
   '(
     (
@@ -61,50 +61,6 @@
      )
     )
 )
-
-(defun tabuleiro-testes()
-'(
-    (
-     (1 1 1 1)
-     (1 0 1 0)
-     (0 1 1 1)
-     (1 1 1 1)
-     )
-    (
-     (preta quadrada alta cheia)
-     (branca quadrada baixa oca)
-     )
-    )
-)
-
-(defun get-tabuleiro_init()
-"Retorna um tabuleiro novo"
-'(
-    (
-     (0 0 0 0)
-     (0 0 0 0)
-     (0 0 0 0)
-     (0 0 0 0)
-     )
-    (
-     (branca quadrada alta cheia)
-     (branca quadrada alta oca)
-     (branca quadrada baixa oca)
-     (branca quadrada baixa cheia)
-     (preta quadrada alta cheia)
-     (preta quadrada alta oca)
-     (preta quadrada baixa oca)
-     (preta quadrada baixa cheia)
-     (branca redonda alta cheia)
-     (branca redonda alta oca)
-     (branca redonda baixa cheia)
-     (branca redonda baixa oca)
-     (preta redonda alta cheia)
-     (preta redonda alta oca)
-     (preta redonda baixa cheia)
-     (preta redonda baixa oca)
-     )
-    ))
 
 
 ;;; _______________________________________________________________________________________________________________________________________________
@@ -184,6 +140,38 @@
 )
 
 
+(defun zeros-linha (linha tab &optional (coluna 1) (count 0))
+  "Retorna o número de zeros numa linha"
+  (cond ((> coluna 4) count)
+        ((casa-vaziap coluna linha tab) (zeros-linha linha tab (+ coluna 1) (+ count 1)))
+        (t (zeros-linha linha tab (+ coluna 1) count))))
+
+(defun zeros-coluna (coluna tab &optional (linha 1) (count 0))
+  "Retorna o número de zeros numa coluna"
+  (cond ((> linha 4) count)
+        ((casa-vaziap coluna linha tab) (zeros-coluna coluna tab (+ linha 1) (+ count 1)))
+        (t (zeros-coluna coluna tab (+ linha 1) count))))
+
+(defun zeros-diagonal (lista &optional (count 0))
+  (cond ((null lista) count)
+        ((numberp (car lista)) (zeros-diagonal (cdr lista) (+ count 1)))
+        (t (zeros-diagonal (cdr lista) count))))
+
+(defun zeros-linhas (tab)
+  "Retorna uma lista com o número de zeros que existe em cada linha"
+  (list (zeros-linha 1 tab)
+        (zeros-linha 2 tab)
+        (zeros-linha 3 tab)
+        (zeros-linha 4 tab)))
+
+(defun zeros-colunas (tab)
+  "Retorna uma lista com o número de zeros que existe em cada coluna"
+  (list (zeros-coluna 1 tab)
+        (zeros-coluna 2 tab)
+        (zeros-coluna 3 tab)
+        (zeros-coluna 4 tab)))
+
+
 ;;; _______________________________________________________________________________________________________________________________________________
 ;;;
 ;;;                                                                OPERADORES
@@ -254,7 +242,7 @@
      (verifica-solucao-lista (coluna 3 tab))
      (verifica-solucao-lista (coluna 4 tab))
      (verifica-solucao-lista (diagonal-1 tab))
-     (verifica-solucao-lista (diagonal-2 tab))) t)));(imprime-tabuleiro no) (format t "~%GANHOU O JOGO!!!~%~%"))))
+     (verifica-solucao-lista (diagonal-2 tab))) t)))
 )
 
 
@@ -266,7 +254,7 @@
 ;Teste: (imprime-jogo (criar-no (tabuleiro-teste-A)))
 (defun imprime-jogo (no)
   "Apresenta o jogo de forma legivel no ecra com o tabuleiro e as pecas de reserva"
-  (format t  "~%     |  A  |  B  |  C  |  D   ~%")
+  (format t  "~%~%     |  A  |  B  |  C  |  D   ~%")
   (format t  " ----|----------------------- ~%")
   (format t  "  1  |  ~A  ~A  ~A  ~A ~%" (celula 1 1 (tabuleiro no)) (celula 2 1 (tabuleiro no)) (celula 3 1 (tabuleiro no)) (celula 4 1 (tabuleiro no)))
   (format t  " ----| ~%")
@@ -274,8 +262,8 @@
   (format t  " ----| ~%")
   (format t  "  3  |  ~A  ~A  ~A  ~A ~%" (celula 1 3 (tabuleiro no)) (celula 2 3 (tabuleiro no)) (celula 3 3 (tabuleiro no)) (celula 4 3 (tabuleiro no)))
   (format t  " ----| ~%")
-  (format t  "  4  |  ~A  ~A  ~A  ~A ~%~%~%~%Peças de Reserva:" (celula 1 4 (tabuleiro no)) (celula 2 4 (tabuleiro no)) (celula 3 4 (tabuleiro no)) (celula 4 4 (tabuleiro no)))
-  (reserva no)
+  (format t  "  4  |  ~A  ~A  ~A  ~A ~%~%~%~%Peças de Reserva:~%" (celula 1 4 (tabuleiro no)) (celula 2 4 (tabuleiro no)) (celula 3 4 (tabuleiro no)) (celula 4 4 (tabuleiro no)))
+  (format t "~{~A~^, ~}.~%" (reserva no))
 )
 
 ;Teste: (imprime-tabuleiro (criar-no (tabuleiro-teste-A)))
@@ -291,7 +279,6 @@
   (format t  " ----| ~%")
   (format t  "  4  |  ~A  ~A  ~A  ~A ~%~%" (celula 1 4 (tabuleiro no)) (celula 2 4 (tabuleiro no)) (celula 3 4 (tabuleiro no)) (celula 4 4 (tabuleiro no)))
 )
-
 
 
 ;;; _______________________________________________________________________________________________________________________________________________
@@ -423,57 +410,61 @@
         
 
 ; Teste: (calcular-valor-linhas (criar-no (tabuleiro-teste-A)))
-; resultado: 310
-(defun calcular-valor-linhas (no &optional (index 1) (valor 0) (valorTotal 0))
+; resultado: 210
+(defun calcular-valor-linhas (no &optional (index 1) (valorTotal 0))
   "Retorna os pontos totais das linha do tabuleiro"
-  (let ((l (nth (- index 1) (conta-linhas (tabuleiro no)))))
+  (let ((l (nth (- index 1) (conta-linhas (tabuleiro no))))
+        (zeros (nth (- index 1) (zeros-linhas (tabuleiro no)))))
     (cond ((= index 5) valorTotal)
-          ((= (apply 'max l) 3) (calcular-valor-linhas no (+ index 1) (+ valor 100) (+ valorTotal 100)))
-          ((= (apply 'max l) 2) (calcular-valor-linhas no (+ index 1) (+ valor 10) (+ valorTotal 10)))
-          ((= (apply 'max l) 1) (calcular-valor-linhas no (+ index 1) (+ valor 1) (+ valorTotal 1)))
-          (t (+ valorTotal 0)))))
+          ((and (= (apply 'max l) 3) (= zeros 1)) (calcular-valor-linhas no (+ index 1) (+ valorTotal 100)))
+          ((and (= (apply 'max l) 2) (= zeros 2)) (calcular-valor-linhas no (+ index 1) (+ valorTotal 10)))
+          ((and (= (apply 'max l) 1) (= zeros 3)) (calcular-valor-linhas no (+ index 1) (+ valorTotal 1)))
+          (t (calcular-valor-linhas no (+ index 1) valorTotal)))))
 
 
 
 ; Teste: (calcular-valor-colunas (criar-no (tabuleiro-teste-A)))
-; resultado: 310
-(defun calcular-valor-colunas (no &optional (index 1) (valor 0) (valorTotal 0))
+; resultado: 210
+(defun calcular-valor-colunas (no &optional (index 1) (valorTotal 0))
   "Retorna os pontos totais das colunas do tabuleiro"
-  (let ((l (nth (- index 1) (conta-colunas (tabuleiro no)))))
+  (let ((l (nth (- index 1) (conta-colunas (tabuleiro no))))
+        (zeros (nth (- index 1) (zeros-colunas (tabuleiro no)))))
     (cond ((= index 5) valorTotal)
-          ((= (apply 'max l) 3) (calcular-valor-colunas no (+ index 1) (+ valor 100) (+ valorTotal 100)))
-          ((= (apply 'max l) 2) (calcular-valor-colunas no (+ index 1) (+ valor 10) (+ valorTotal 10)))
-          ((= (apply 'max l) 1) (calcular-valor-colunas no (+ index 1) (+ valor 1) (+ valorTotal 1)))
-          (t (+ valorTotal 0)))))
+          ((and (= (apply 'max l) 3) (= zeros 1)) (calcular-valor-colunas no (+ index 1) (+ valorTotal 100)))
+          ((and (= (apply 'max l) 2) (= zeros 2)) (calcular-valor-colunas no (+ index 1) (+ valorTotal 10)))
+          ((and (= (apply 'max l) 1) (= zeros 3)) (calcular-valor-colunas no (+ index 1) (+ valorTotal 1)))
+          (t (calcular-valor-colunas no (+ index 1) valorTotal)))))
 
 
 
 ; Teste: (calcular-valor-diagonal-1 (criar-no (tabuleiro-teste-A)))
-; resultado: 10
+; resultado: 0
 (defun calcular-valor-diagonal-1 (no)
   "Retorna os pontos da diagonal 1 do tabuleiro"
   (let ((l (conta-diagonal-1 (tabuleiro no)))
+        (zeros (zeros-diagonal (diagonal-1 (tabuleiro no))))
         (valorTotal 0))
-    (cond ((= (apply 'max l) 3) (+ valorTotal 100))
-          ((= (apply 'max l) 2) (+ valorTotal 10))
-          ((= (apply 'max l) 1) (+ valorTotal 1))
+    (cond ((and (= (apply 'max l) 3) (= zeros 1)) (+ valorTotal 100))
+          ((and (= (apply 'max l) 2) (= zeros 2)) (+ valorTotal 10))
+          ((and (= (apply 'max l) 1) (= zeros 3)) (+ valorTotal 1))
           (t (+ valorTotal 0)))))
 
 
 ; Teste: (calcular-valor-diagonal-2 (criar-no (tabuleiro-teste-A)))
-; resultado: 100
+; resultado: 0
 (defun calcular-valor-diagonal-2 (no)
   "Retorna os pontos da diagonal 2 do tabuleiro"
   (let ((l (conta-diagonal-2 (tabuleiro no)))
+        (zeros (zeros-diagonal (diagonal-2 (tabuleiro no))))
         (valorTotal 0))
-    (cond ((= (apply 'max l) 3) (+ valorTotal 100))
-          ((= (apply 'max l) 2) (+ valorTotal 10))
-          ((= (apply 'max l) 1) (+ valorTotal 1))
+    (cond ((and (= (apply 'max l) 3) (= zeros 1)) (+ valorTotal 100))
+          ((and (= (apply 'max l) 2) (= zeros 2)) (+ valorTotal 10))
+          ((and (= (apply 'max l) 1) (= zeros 3)) (+ valorTotal 1))
           (t (+ valorTotal 0)))))
 
 
 ; Teste: (avaliar-no (criar-no (tabuleiro-teste-A)))
-; resultado: 730
+; resultado: 420
 (defun avaliar-no (no)
   "Recebe um no e efetua os calculos de avaliacao"
   (cond ((null no) nil)
@@ -488,15 +479,15 @@
 ;;; _______________________________________________________________________________________________________________________________________________
 
 ; Teste: (gerar-nos-posicao 1 1 (criar-no (get-tabuleiro_init)) (reserva (criar-no (get-tabuleiro_init))))
-(defun gerar-nos-posicao(x y no reserv)
+(defun gerar-nos-posicao(x y no reserv &optional (lista '()))
   "Retorna numa lista todos os nós filhos possíveis numa dada posição (x,y)"
   (cond
-    ((null reserv) nil)
-    ((not(casa-vaziap x y (tabuleiro no))) nil)
-    (t (cons (criar-no (get-allTab (operador (conversor-coluna-nl x) y (car reserv) no)) (+ (get-profundidade no) 1) no) (gerar-nos-posicao x y no (cdr reserv))))));Faz lista com todos os filhos possíveis do nó recebido numa dada posição, já na forma de nó.
+    ((null reserv) lista )
+    ((not(casa-vaziap x y (tabuleiro no))) (gerar-nos-posicao x y no (cdr reserv) lista))
+    (t (gerar-nos-posicao x y no (cdr reserv) (cons (criar-no (get-allTab (operador (conversor-coluna-nl x) y (car reserv) no)) (+ (get-profundidade no) 1) no) (gerar-nos-posicao x y no (cdr reserv)))))));Faz lista com todos os filhos possíveis do nó recebido numa dada posição, já na forma de nó.
 
 
-
+; Teste: (gerar-sucessores (criar-no (get-tabuleiro_init)) 1)
 (defun gerar-sucessores(no profundidade)
   "Retorna lista dos filhos do no. Caso a reserva esteja vazia retorna nil"
     (cond
@@ -506,10 +497,12 @@
      
 
 (defun gerar-colunas (no &optional (col 4) (lista '()))
+   "Recebe um no vai gerar nós para todas as posições de todas as colunas"
   (cond ((< col 1) lista)
         (t (gerar-colunas no (- col 1) (gerar-linhas no col lista)))))
 
 (defun gerar-linhas (no col lista &optional (lin 4))
+  "Recebe um no, uma coluna e uma lista e vai gerar nós para todas as posições com a coluna indicada e todas as linhas"
   (cond ((< lin 1) lista)
         ((casa-vaziap col lin (tabuleiro no)) (gerar-linhas no col (juntar-listas lista (gerar-nos-posicao col lin no (reserva no))) (- lin 1)))
         (t (gerar-linhas no col lista (- lin 1)))))
