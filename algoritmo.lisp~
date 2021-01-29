@@ -10,7 +10,7 @@
 
 ;; Negamax com cortes alfabeta - Chamada inicial -> (negamax noRoot profundidade most-negative-fixnum most-positive-fixnum)
 (defun negamax(no profundidade jogador &optional (alfa most-negative-fixnum) (beta most-positive-fixnum))
-  "" 
+  "Função do algoritmo negamax" 
   (cond ((or (= profundidade 0) (no-folha no)) (no-resultado no jogador))
         (t (let ((nos-filhos (ordenar-nos (gerar-sucessores no profundidade)))
                  (value most-negative-fixnum))
@@ -44,7 +44,7 @@
 
 
 (defun no-resultado (no jogador)
-  ""
+  "Função que retorna o nó resultado com o valor"
   (list (first no) (second no) (third no) (* (fourth no) jogador)))
 
 
