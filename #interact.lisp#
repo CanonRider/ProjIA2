@@ -1,13 +1,13 @@
 ;;;; interact.lisp
 ;;;; Disciplina de IA - 2020 / 2021
-;;;; Projeto n∫2 - Problema do Quatro
-;;;; Autor: Jo„o Azevedo  n∫180221119
-;;;; Autor: Sara Carvalho  n∫180221048
+;;;; Projeto n¬∫2 - Problema do Quatro
+;;;; Autor: Jo√£o Azevedo  n¬∫180221119
+;;;; Autor: Sara Carvalho  n¬∫180221048
 
 
 ;;; _______________________________________________________________________________________________________________________________________________
 ;;;
-;;;                                                            INICIALIZA«√O DO PROGRAMA
+;;;                                                            INICIALIZA√á√ÉO DO PROGRAMA
 ;;; _______________________________________________________________________________________________________________________________________________
 (defun iniciar ()
   "Inicia o programa"
@@ -17,11 +17,11 @@
     (format t "**************************************~%~%")
     (let* ((no-inicial (criar-no (get-tabuleiro_init)))
            (profundidade (ler-profundidade))
-           (tempo-jogada (ler-tempo-jogada))
+           ;(tempo-jogada (ler-tempo-jogada))
            (modo-jogo (ler-modo-jogo)))
       (if (= modo-jogo 1) ;se escolher humano vs computador
-          (modo-humano-computador no-inicial profundidade tempo-jogada)
-        (modo-computador-computador no-inicial profundidade tempo-jogada)))))
+          (modo-humano-computador no-inicial profundidade)
+        (modo-computador-computador no-inicial profundidade)))))
 
 
 
@@ -56,7 +56,7 @@
 
 
 
-;;; ---FUN«OES DE LEITURA---
+;;; ---FUN√áOES DE LEITURA---
 
 (defun ler-profundidade()
   "Permite fazer a leitura da profundidade limite para o algoritmo negamax."
@@ -76,31 +76,31 @@
     (format t "~%Qual o modo de jogo? ~%")
     (format t "1- Humano vs Computador ~%")
     (format t "2- Computador vs Computador ~%")
-    (format t "OpÁ„o: ")
+    (format t "Op√ß√£o: ")
     (let ((resposta (read)))
       (cond ((= resposta 1) 1)
             (t 2)))))
 
 
 (defun ler-jogador ()
-  "Permite fazer a leitura do jogador que comeÁa a jogar"
+  "Permite fazer a leitura do jogador que come√ßa a jogar"
   (progn
-    (format t "~%Que jogador comeÁa? ~%")
+    (format t "~%Que jogador come√ßa? ~%")
     (format t "1- Humano ~%")
     (format t "2- Computador ~%")
-    (format t "OpÁ„o: ")
+    (format t "Op√ß√£o: ")
     (let ((resposta (read)))
       (cond ((= resposta 1) 1)
             (t 2)))))
 
 
 (defun ler-computador ()
-  "Permite fazer a leitura do computador que comeÁa a jogar"
+  "Permite fazer a leitura do computador que come√ßa a jogar"
   (progn
-    (format t "~%Que computador comeÁa? ~%")
+    (format t "~%Que computador come√ßa? ~%")
     (format t "1- Computador 1 ~%")
     (format t "2- Computador 2 ~%")
-    (format t "OpÁ„o: ")
+    (format t "Op√ß√£o: ")
     (let ((resposta (read)))
       (cond ((= resposta 1) 1)
             (t 2)))))
@@ -123,9 +123,9 @@
       coordenadas)))
 
 (defun ler-peca ()
-  "Permite fazer a leitura da peÁa que o jogador quer jogar"
+  "Permite fazer a leitura da pe√ßa que o jogador quer jogar"
   (progn
-    (format t "~%~% Escolha uma peÁa da lista de peÁas de reserva (ex: (PRETA QUADRADA ALTA CHEIA) ):  ")
+    (format t "~%~% Escolha uma pe√ßa da lista de pe√ßas de reserva (ex: (PRETA QUADRADA ALTA CHEIA) ):  ")
     (let((peca (read)))
       peca)))
 
@@ -134,37 +134,34 @@
   (progn
     (format t "~%~%_______________TABULEIRO_______________~%")
     (imprime-jogo no)
-    ;(format t "~%~%_______________________________________"))
   ))
 
 
 ;;; _______________________________________________________________________________________________________________________________________________
 ;;;
-;;;                                                              FUN«OES DAS JOGADAS
+;;;                                                              FUN√áOES DAS JOGADAS
 ;;; _______________________________________________________________________________________________________________________________________________
 
 (defvar *jogada*)
 
 (defun jogada-humana (estado coordenadas peca)
-  "FunÁ„o que representa a jogada humana"
+  "Fun√ß√£o que representa a jogada humana"
   (setq *jogada* (operador (first coordenadas) (second coordenadas) peca estado))
   (mostra-tabuleiro *jogada*)
-  ;(imprime-estatisticas-humano *jogada*)
-  
 )
 
 
-(defun jogada-computador (estado profundidade jogador tempo-jogada)
-  "FunÁ„o que representa a jogada do computador"
+(defun jogada-computador (estado profundidade jogador)
+  "Fun√ß√£o que representa a jogada do computador"
   (format t "~%~% ******* Jogada do Computador *******")
-  (cond ((= jogador 1) (setq *jogada* (negamax estado profundidade 1 tempo-jogada)))
-         (t (setq *jogada* (negamax estado profundidade -1 tempo-jogada))))
+  (cond ((= jogador 1) (setq *jogada* (negamax estado profundidade 1)))
+         (t (setq *jogada* (negamax estado profundidade -1))))
   (mostra-tabuleiro (car *jogada*))
   (imprime-estatisticas *jogada*)
-  (teste-escrever-log))
+  (escrever-log))
 
 (defun troca-jogador (jogador)
-  "FunÁ„o auxiliar que troca o jogador"
+  "Fun√ß√£o auxiliar que troca o jogador"
   (cond ((= jogador 1) 2)
         (t 1)))
 
@@ -172,121 +169,117 @@
 
 ;;; ---HUMANO VS COMPUTADOR---
 
-(defun modo-humano-computador (estado profundidade tempo-jogada)
-  "FunÁ„o que representa o modo de jogo Humano vs Computador"
+(defun modo-humano-computador (estado profundidade)
+  "Fun√ß√£o que representa o modo de jogo Humano vs Computador"
   (let ((jogador1 (ler-jogador)))
     (cond ((= jogador1 1) ;se escolher o humano
            (mostra-tabuleiro estado)
            (let* ((peca (ler-peca))
                   (coordenadas (ler-jogada)))
              (jogada-humana estado coordenadas peca)
-             (jogadas-modo1 *jogada* 2 tempo-jogada profundidade)))
-           ((= jogador1 2) (jogada-computador estado profundidade 1 tempo-jogada) (jogadas-modo1 (car *jogada*) 1 tempo-jogada profundidade))
-          (t (format t "Jogador inv·lido") (modo-humano-computador estado profundidade tempo-jogada)))))
+             (jogadas-modo1 *jogada* 2 profundidade)))
+           ((= jogador1 2) (jogada-computador estado profundidade 1) (jogadas-modo1 (car *jogada*) 1 profundidade))
+          (t (format t "Jogador inv√°lido") (modo-humano-computador estado profundidade)))))
 
 ;jogador humano - 1
 ;jogador computador - 2
-(defun jogadas-modo1 (estado jogador tempo-jogada &optional (profundidade 0))
-  "FunÁ„o recursiva que representa as jogadas do modo Humano vs Computador"
+(defun jogadas-modo1 (estado jogador &optional (profundidade 0))
+  "Fun√ß√£o recursiva que representa as jogadas do modo Humano vs Computador"
   (cond ((no-solucao estado) (format t "~%~%O JOGADOR ~d GANHOUUUU!!!~%~%" (troca-jogador jogador)) (imprime-tabuleiro estado) )
         (t (cond ((= jogador 1) 
                   (let* ((peca (ler-peca))
                          (coordenadas (ler-jogada)))
                     (jogada-humana estado coordenadas peca)
-                    (jogadas-modo1 *jogada* 2 tempo-jogada profundidade)))
-                 (t (jogada-computador estado profundidade 2 tempo-jogada) (jogadas-modo1 (car *jogada*) 1 tempo-jogada profundidade))))))
+                    (jogadas-modo1 *jogada* 2 profundidade)))
+                 (t (jogada-computador estado profundidade 2) (jogadas-modo1 (car *jogada*) 1 profundidade))))))
 
 
 
 ;;; ---COMPUTADOR VS COMPUTADOR---
 
-(defun modo-computador-computador (estado profundidade tempo-jogada)
-  "FunÁ„o que representa o modo de jogo Computador vs Computador"
+(defun modo-computador-computador (estado profundidade)
+  "Fun√ß√£o que representa o modo de jogo Computador vs Computador"
   (let ((jogador1 (ler-computador)))
     (cond ((= jogador1 1) ;se escolher o computador 1
-           (jogada-computador estado profundidade jogador1 tempo-jogada) 
-           (jogadas-modo2 (car *jogada*) 2 tempo-jogada profundidade))
-          ((= jogador1 2) (jogada-computador estado profundidade 1 tempo-jogada) (jogadas-modo2 (car *jogada*) 1 tempo-jogada profundidade))
-          (t (format t "Jogador inv·lido") (modo-computador-computador estado profundidade tempo-jogada)))))
+           (jogada-computador estado profundidade jogador1) 
+           (jogadas-modo2 (car *jogada*) 2 profundidade))
+          ((= jogador1 2) (jogada-computador estado profundidade 1) (jogadas-modo2 (car *jogada*) 1 profundidade))
+          (t (format t "Jogador inv√°lido") (modo-computador-computador estado profundidade)))))
 
 ;jogador computador1 - 1
 ;jogador computador2 - 2
-(defun jogadas-modo2 (estado jogador tempo-jogada profundidade)
-  "FunÁ„o recursiva que representa as jogadas do modo Computador vs Computador"
+(defun jogadas-modo2 (estado jogador profundidade)
+  "Fun√ß√£o recursiva que representa as jogadas do modo Computador vs Computador"
   (cond ((no-solucao estado) (format t "~%~%O COMPUTADOR ~d GANHOUUUU!!!~%~%" (troca-jogador jogador)) (imprime-tabuleiro estado))
         (t (cond ((= jogador 1) 
-                  (jogada-computador estado profundidade jogador tempo-jogada) 
-                  (jogadas-modo2 (car *jogada*) 2 tempo-jogada profundidade))
-                 (t (jogada-computador estado profundidade jogador tempo-jogada) (jogadas-modo2 (car *jogada*) 1 tempo-jogada profundidade))))))
+                  (jogada-computador estado profundidade jogador) 
+                  (jogadas-modo2 (car *jogada*) 2 profundidade))
+                 (t (jogada-computador estado profundidade jogador) (jogadas-modo2 (car *jogada*) 1 profundidade))))))
      
 
             
 
+
 ;;; _______________________________________________________________________________________________________________________________________________
 ;;;
-;;;                                                                  ESTATÕSTICAS
+;;;                                                                  ESTAT√çSTICAS
 ;;; _______________________________________________________________________________________________________________________________________________
 
 (defun imprime-estatisticas (no)
-  "Apresenta as estatÌsticas de cada jogada no ecr„"
+  "Apresenta as estat√≠sticas de cada jogada no ecr√£"
   (progn
-    (format t "~%~%______________ESTATÕSTICAS_____________~%~%")
-    (format t "Valor do nÛ: ~d" (first (second no)))
-    (format t "~%Profundidade do nÛ: ~d" (second (second no)))
+    (format t "~%~%______________ESTAT√çSTICAS_____________~%~%")
+    (format t "Valor do n√≥: ~d" (first (second no)))
+    (format t "~%Profundidade do n√≥: ~d" (second (second no)))
     (format t "~%Cortes efetuados: ~d" (third (second no)))
     (format t "~%~%_______________________________________")))
 
-(defun imprime-estatisticas-humano (no)
-  "Apresenta as estatÌsticas de cada jogada no ecr„"
-  (progn
-    (format t "~%~%______________ESTATÕSTICAS_____________~%~%")
-    (format t "Valor do nÛ: ~d" (first (second no)))
-    (format t "~%Profundidade do nÛ: ~d" (second (second no)))
-    (format t "~%~%_______________________________________")))
 
 
-
-(defun 
-
-
-;cria path do ficheiro
-;C:\Users\HTC\Desktop\IPS\3∫ ANO\1∫ SEMESTRE\InteligÍncia Artificial\Projeto
-(defun log-path()
-  "Cria um caminho para o ficheiro log.dat"
-  (make-pathname :host "C" :directory '(:absolute "Users" "HTC" "Desktop" "IPS" "3∫ ANO" "1∫ SEMESTRE" "InteligÍncia Artificial" "Projeto" "P2") :name "log" :type "dat")
+(defun escreve-tabuleiro (no &optional (stream t))
+  "Escreve o tabuleiro no ficheiro"
+  (format stream  "~%     |  A  |  B  |  C  |  D   ~%")
+  (format stream  " ----|----------------------- ~%")
+  (format stream  "  1  |  ~A  ~A  ~A  ~A ~%" (celula 1 1 (tabuleiro no)) (celula 2 1 (tabuleiro no)) (celula 3 1 (tabuleiro no)) (celula 4 1 (tabuleiro no)))
+  (format stream  " ----| ~%")
+  (format stream  "  2  |  ~A  ~A  ~A  ~A ~%" (celula 1 2 (tabuleiro no)) (celula 2 2 (tabuleiro no)) (celula 3 2 (tabuleiro no)) (celula 4 2 (tabuleiro no)))
+  (format stream  " ----| ~%")
+  (format stream  "  3  |  ~A  ~A  ~A  ~A ~%" (celula 1 3 (tabuleiro no)) (celula 2 3 (tabuleiro no)) (celula 3 3 (tabuleiro no)) (celula 4 3 (tabuleiro no)))
+  (format stream  " ----| ~%")
+  (format stream  "  4  |  ~A  ~A  ~A  ~A ~%~%" (celula 1 4 (tabuleiro no)) (celula 2 4 (tabuleiro no)) (celula 3 4 (tabuleiro no)) (celula 4 4 (tabuleiro no)))
 )
 
-;escreve no ficheiro
-(defun log-add-info(jogada &optional (stream t))
-  ""
-  (format stream "~%--> Valor do nÛ: ~a" (first (second jogada)))
-  (format stream "~%--> Profundidade do nÛ: ~a" (first (second jogada)))
-  (format stream "~%--> Cortes efetuados: ~a" (first (second jogada)))
-  (format stream "~%--> Tabuleiro Atual: ~%" (imprime-tabuleiro (car jogada)))
+
+;C:\Users\HTC\Desktop\IPS\3¬∫ ANO\1¬∫ SEMESTRE\Intelig√™ncia Artificial\Projeto
+(defun log-path()
+  "Cria um caminho para o ficheiro log.dat"
+  (make-pathname :host "C" :directory '(:absolute "Users" "HTC" "Desktop" "IPS" "3¬∫ ANO" "1¬∫ SEMESTRE" "Intelig√™ncia Artificial" "Projeto" "P2") :name "log" :type "dat")
+)
+
+
+(defun log-add-info-computador(&optional (stream t))
+  "Permite escrever dentro do ficheiro"
+  (format stream "~%*** JOGADA COMPUTADOR ***")
+  (format stream "~%--> Valor do n√≥: ~a" (first (second *jogada*)))
+  (format stream "~%--> Profundidade do n√≥: ~a" (second (second *jogada*)))
+  (format stream "~%--> Cortes efetuados: ~a" (third (second *jogada*)))
+  (format stream "~%--> Tabuleiro Atual: ~%")
+  (escreve-tabuleiro (car *jogada*) stream)
+  (format stream "~%______________________________________________________________~%")
+)
+
+(defun log-add-info-humana(&optional (stream t))
+  "Permite escrever dentro do ficheiro"
+  (format stream "~%*** JOGADA HUMANA ***")
+  (format stream "~%--> Tabuleiro Atual: ~%")
+  (escreve-tabuleiro *jogada* stream)
   (format stream "~%______________________________________________________________~%")
 )
 
 
-(defun escrever-log (jogada)
-  ""
+(defun escrever-log ()
+  "Fun√ß√£o principal para escrever no ficheiro"
   (with-open-file (file (log-path) :direction :output :if-exists :append :if-does-not-exist :create)
-    (log-add-info jogada file))
-)
-
-(defun teste-escrever-log ()
-  (escrever-log *jogada*))
-
-
-;Teste: (imprime-tabuleiro (criar-no (tabuleiro-teste-A)))
-(defun imprime-tabuleiro (no)
-  "Apresenta so o tabuleiro do jogo de forma legivel no ecra"
-  (format t  "~%     |  A  |  B  |  C  |  D   ~%")
-  (format t  " ----|----------------------- ~%")
-  (format t  "  1  |  ~A  ~A  ~A  ~A ~%" (celula 1 1 (tabuleiro no)) (celula 2 1 (tabuleiro no)) (celula 3 1 (tabuleiro no)) (celula 4 1 (tabuleiro no)))
-  (format t  " ----| ~%")
-  (format t  "  2  |  ~A  ~A  ~A  ~A ~%" (celula 1 2 (tabuleiro no)) (celula 2 2 (tabuleiro no)) (celula 3 2 (tabuleiro no)) (celula 4 2 (tabuleiro no)))
-  (format t  " ----| ~%")
-  (format t  "  3  |  ~A  ~A  ~A  ~A ~%" (celula 1 3 (tabuleiro no)) (celula 2 3 (tabuleiro no)) (celula 3 3 (tabuleiro no)) (celula 4 3 (tabuleiro no)))
-  (format t  " ----| ~%")
-  (format t  "  4  |  ~A  ~A  ~A  ~A ~%~%" (celula 1 4 (tabuleiro no)) (celula 2 4 (tabuleiro no)) (celula 3 4 (tabuleiro no)) (celula 4 4 (tabuleiro no)))
+    ;(if (eq modo 'Humano)(log-add-info-humana file)
+      (log-add-info-computador file))
 )

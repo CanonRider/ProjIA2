@@ -5,64 +5,6 @@
 ;;;; Autor: Sara Carvalho  nº180221048
 
 
-;;; Tabuleiro testes e tabuleiro solucao
-(defun tabuleiro-teste-A ()
-  '(
-    (
-     ((branca quadrada alta oca) (preta quadrada baixa cheia) 0 (preta quadrada alta oca))
-     ((branca redonda alta oca) (preta redonda alta oca) (branca redonda alta cheia) 0)
-     (0 (preta redonda alta cheia) (preta redonda baixa cheia) 0)
-     ((branca redonda baixa oca) (branca quadrada alta cheia) (preta redonda baixa oca) (branca quadrada baixa cheia))
-     )
-    (
-     (preta quadrada alta cheia)
-     (preta quadrada baixa oca)
-     (branca redonda baixa cheia)
-     (branca quadrada baixa oca)
-     )
-    )
-)
-
-(defun probD ()
-  '(
-    (
-     ((branca quadrada baixa cheia) (branca redonda alta cheia) (preta redonda alta cheia) (preta quadrada baixa oca))
-     (0 0 0 0)
-     (0 0 0 0)
-     (0 0 0 0)
-     )
-    (
-     (branca quadrada alta cheia)
-     (branca quadrada baixa oca)
-     (preta quadrada alta cheia)
-     (preta quadrada alta oca)
-     (preta quadrada baixa cheia)
-     (branca redonda baixa oca)
-     (branca redonda alta cheia)
-     (branca redonda baixa cheia)
-     (preta redonda alta oca)
-     (preta redonda baixa cheia)
-     )
-    )
-)
-
-(defun tabuleiro-teste-SOLUCAO ()
-  '(
-    (
-     ((branca quadrada alta oca) (preta quadrada baixa cheia) 0 (preta quadrada alta oca))
-     ((branca redonda alta oca) (preta redonda alta oca) (branca redonda alta cheia) (preta quadrada alta cheia))
-     (0 (preta redonda alta cheia) (preta redonda baixa cheia) 0)
-     ((branca redonda baixa oca) (branca quadrada alta cheia) (preta redonda baixa oca) (branca quadrada baixa cheia))
-     )
-    (
-     (preta quadrada baixa oca)
-     (branca redonda baixa cheia)
-     (branca quadrada baixa oca)
-     )
-    )
-)
-
-
 ;;; _______________________________________________________________________________________________________________________________________________
 ;;;
 ;;;                                                                SELETORES
@@ -520,4 +462,8 @@
    ((or (< linha 1)(> linha 4)) (format t "Linha invalida"))
    ((not(casa-vaziap (conversor-coluna-ln coluna) linha (tabuleiro no))) nil) 
    (t (criar-no (list (substituir (conversor-coluna-ln coluna) linha peca (tabuleiro no)) (remover-peca peca (reserva no)))))));(imprime-tabuleiro (criar-no (list (substituir (conversor-coluna-ln coluna) linha peca (tabuleiro no)) (remover-peca peca (reserva no))))))))
+
+
+
+
 
