@@ -5,7 +5,7 @@
 ;;;; Autor: Sara Carvalho  nº180221048
 
 
-;;; Tabuleiro teste e tabuleiro solucao
+;;; Tabuleiro testes e tabuleiro solucao
 (defun tabuleiro-teste-A ()
   '(
     (
@@ -57,22 +57,6 @@
     (
      (preta quadrada baixa oca)
      (branca redonda baixa cheia)
-     (branca quadrada baixa oca)
-     )
-    )
-)
-
-
-(defun tabuleiro-testes()
-'(
-    (
-     (1 1 1 1)
-     (1 0 1 0)
-     (0 1 1 1)
-     (1 1 1 1)
-     )
-    (
-     (preta quadrada alta cheia)
      (branca quadrada baixa oca)
      )
     )

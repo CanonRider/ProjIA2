@@ -9,20 +9,22 @@
 ;jogador2 -> -1 
 
 ;; Negamax com cortes alfabeta - Chamada inicial -> (negamax noRoot profundidade most-negative-fixnum most-positive-fixnum)
-(defun negamax(no profundidade jogador &optional (alfa most-negative-fixnum) (beta most-positive-fixnum))
+(defun negamax(no profundidade jogador &optional (alfa most-negative-fixnum) (beta most-negative-fixnum))
   "Função do algoritmo negamax" 
   (cond ((or (= profundidade 0) (no-folha no)) (no-resultado no jogador))
         (t (let ((nos-filhos (ordenar-nos (gerar-sucessores no profundidade)))
                  (value most-negative-fixnum))
-             (loop for i from 0 to (- (list-length nos-filhos) 1) do
-                   (cond ((= (list-length nos-filhos) 1) (no-resultado nos-filhos jogador))
-                         (t (let ((no-nega (negamax (nth i nos-filhos) (- profundidade 1) (- jogador) (- beta) (- alfa))))
-                              (setq value (max value (get-valor no-nega)))
-                              (setq alfa (max alfa value))
-                              (when (>= alfa beta) (return no-nega)) )))))))) ; cut-off
+             (negamax-aux no profundidade jogador alfa beta nos-filhos value)))))
 
 
-
+(defun negamax-aux (no profundidade jogador alfa beta nos-filhos value)
+  "Função recursiva auxiliar do algoritmo negamax"
+  (cond ((= (list-length nos-filhos) 1) (no-resultado nos-filhos jogador))
+        (t (let ((no-nega (negamax (car nos-filhos) (- profundidade 1) (- jogador) (- beta) (- alfa))))
+             (setq value (max value (- (get-valor no-nega))))
+             (setq alfa (max alfa value))
+             (cond ((>= alfa beta) no-nega) ;cut-off
+                   (t (negamax-aux no profundidade jogador alfa beta (cdr nos-filhos) value)))))))
 
 
 ;;; ---FUNÇÕES AUXILIARES---

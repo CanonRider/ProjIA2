@@ -15,13 +15,14 @@
         (t (let ((nos-filhos (ordenar-nos (gerar-sucessores no profundidade)))
                  (value most-negative-fixnum))
              (loop for i from 0 to (- (list-length nos-filhos) 1) do
-                   (cond ((= (list-length nos-filhos) 1) (format t "dentro do 2º cond ~%") (no-resultado nos-filhos jogador))
-                         (t (format t "antes do 2º let ~%") (let ((no-nega (negamax (nth i nos-filhos) (- profundidade 1) (- jogador) (- beta) (- alfa))))
+                   (cond ((= (list-length nos-filhos) 1) (no-resultado nos-filhos jogador))
+                         (t (let ((no-nega (negamax (nth i nos-filhos) (- profundidade 1) (- jogador) (- beta) (- alfa))))
                               (setq value (max value (get-valor no-nega)))
                               (setq alfa (max alfa value))
-                              (format t "antes do when ~%")
-                              (when (>= alfa beta) no-nega) )))))))) ; cut-off
-                            ;(if (>= alfa beta) value))))))))
+                              (when (>= alfa beta) (return no-nega)) )))))))) ; cut-off
+
+
+
 
 
 ;;; ---FUNÇÕES AUXILIARES---
